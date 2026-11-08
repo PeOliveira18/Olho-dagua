@@ -153,6 +153,9 @@ Ferramentas já instaladas na máquina: .NET SDK 10, Node 22, Java 23 com Maven 
 **Outras regras:**
 - As **duas APIs habilitam CORS** para qualquer origem em desenvolvimento, para o Expo Web funcionar.
 - A chamada da Telemetria para o Cidadão envia o header **`X-Api-Key`**. O Cidadão rejeita com 401 se a chave estiver errada.
+  - **Valor em desenvolvimento: `olhodagua-dev-chave`.** No Cidadão fica em `Integracao:ApiKey` (`appsettings.Development.json`); na Telemetria, use `CIDADAO_API_KEY=olhodagua-dev-chave`.
+- O Serviço do Cidadão já está implementado (repositório Olho-dagua). Além dos endpoints da C1.4, ele tem `GET /api/alertas/{id}`, `POST /api/abrigos/{id}/saida` e `GET /api/notificacoes?dispositivoId=` (histórico dos pushes simulados, útil para mostrar no vídeo que o alerta chegou ao celular).
+- **Regra do contrato ②:** ao receber um novo alerta de um sensor, o Cidadão **encerra sozinho** o alerta anterior do mesmo sensor. A Telemetria só precisa chamar o contrato ③ (encerrar) quando o nível volta a NORMAL, usando o `alertaId` do último alerta.
 - **JSON:** campos em `camelCase` e **enums como string em MAIÚSCULAS**, por exemplo `"ALERTA"`. No C#, configurar `JsonStringEnumConverter` com essa política de nomes.
 
 ## B4. Dados de seed (os mesmos IDs nos dois serviços)
