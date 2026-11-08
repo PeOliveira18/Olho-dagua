@@ -98,27 +98,28 @@ A equipe decidiu **não entrevistar ninguém**. O PDF pede conversar com alguém
 
 # PARTE B — DECISÕES TÉCNICAS COMPARTILHADAS (FIXAS)
 
-## B1. Repositório: monorepo único no GitHub
+## B1. Repositórios: um por matéria
 
-Um único link de repositório serve para todas as disciplinas.
+Cada matéria tem o **seu próprio repositório** no GitHub, e é esse link que vai no Teams de cada uma.
 
-```
-olho-dagua/
-├── README.md                    ← Ficha da CitizenTech + visão geral + links dos vídeos
-├── PLANO.md                     ← este arquivo
-├── prompts.md                   ← registro de IA (todas as matérias escrevem aqui)
-├── docs/                        ← pesquisa.md, persona, arquitetura, prints
-├── servico-cidadao-dotnet/      ← C1 · C#
-├── servico-telemetria-java/     ← C2 · SOA
-├── app-mobile/                  ← C3 · Mobile
-├── iot/                         ← C4 · Wokwi (sketch.ino, diagram.json, integrantes.txt)
-├── ml/                          ← C5 · notebook, dados/, RELATORIO_ML.md
-├── infra/                       ← C6 · docker-compose.yml + scripts Linux
-├── cyber/                       ← C7 · módulo PII / taint / dashboard
-└── qa/                          ← C8 · export/prints do Azure Boards
-```
+| Matéria | Repositório | Pasta local | Código fica em |
+|---|---|---|---|
+| **C#** (C1) + plano mestre | https://github.com/PeOliveira18/Olho-dagua | `Desktop\olho-d'agua` | `servico-cidadao-dotnet/` |
+| **SOA** (C2) | https://github.com/PeOliveira18/GlobalSolution-SOA | `Desktop\GS-SOA` | `servico-telemetria-java/` |
+| **Mobile** (C3) | https://github.com/PeOliveira18/GlobalSolution-Mobile | `Desktop\GS-Mobile` | `app-mobile/` |
 
-Cada pasta tem seu próprio `README.md` com as instruções de execução.
+Os repositórios das outras matérias (IoT, ML, OS, Cyber, QA) são criados por quem fizer cada uma, seguindo o mesmo padrão.
+
+**Todo repositório tem na raiz:**
+- `README.md`, com a Ficha da CitizenTech no topo, o que esse repositório entrega e os links dos outros
+- `PLANO.md`, uma cópia deste arquivo
+- `prompts.md`, com o registro de IA daquela matéria
+- `.gitignore` e `.gitattributes`
+- `infra/docker-compose.yml`, só nos repositórios de backend (C# e SOA), para subir o PostgreSQL
+
+**Fonte da verdade:** a cópia **mestre** do PLANO.md fica no repositório **Olho-dagua**. Se um contrato da Parte B mudar, atualize a cópia mestre e copie o arquivo para os outros repositórios, senão as partes deixam de se encaixar.
+
+**Cada repositório tem seu próprio chat**, aberto na pasta local dele. Um chat não mexe no repositório de outra matéria.
 
 ## B2. Stack e versões
 
@@ -914,7 +915,7 @@ Exemplos:
 
 # PARTE E — PROMPTS PRONTOS PARA ABRIR CADA CHAT
 
-Abra o novo chat **na mesma pasta do projeto** e cole o prompt da matéria:
+Abra o novo chat **na pasta local do repositório da matéria** (tabela da B1) e cole o prompt da matéria:
 
 **C# →**
 > Leia o PLANO.md, Partes A e B e a seção C1. Implemente o Serviço do Cidadão em `servico-cidadao-dotnet/` exatamente como especificado, sem mudar os contratos da Parte B. Ao terminar, rode `dotnet build` e `dotnet test` e registre o uso de IA no `prompts.md`.
@@ -963,13 +964,14 @@ Entrega                                                                         
 
 ## Etapa 0 — Base comum (hoje, ~30 min)
 
-1. Mover este projeto para uma pasta permanente e rodar `git init` nela.
-2. Criar o repositório `olho-dagua` no GitHub (público, para os professores) e fazer o primeiro push.
-3. Subir o banco com `docker compose -f infra/docker-compose.yml up -d`.
-4. Conferir que os dois bancos existem: `docker exec -it olhodagua-db psql -U olho -l` deve listar `cidadao` e `telemetria`.
-5. Instalar a ferramenta de migrations do EF: `dotnet tool install --global dotnet-ef`.
+1. ✔ Os 3 repositórios (Olho-dagua, GlobalSolution-SOA e GlobalSolution-Mobile) foram criados e receberam o commit inicial.
+2. Abrir o Docker Desktop e subir o banco **a partir do repositório C# ou do SOA, tanto faz**: `docker compose -f infra/docker-compose.yml up -d`.
+   - Os dois compose são o **mesmo projeto Docker** (`name: olhodagua`), então rodar em qualquer um dos dois sobe o mesmo container `olhodagua-db`. Ele cria os bancos `cidadao` e `telemetria` de uma vez.
+   - **Não suba dois Postgres:** ambos usariam a porta 5432.
+3. Conferir que os dois bancos existem: `docker exec -it olhodagua-db psql -U olho -l` deve listar `cidadao` e `telemetria`.
+4. Instalar a ferramenta de migrations do EF: `dotnet tool install --global dotnet-ef`.
 
-✅ **Checkpoint:** o Postgres está no ar com os 2 bancos e o repositório está no GitHub.
+✅ **Checkpoint:** o Postgres está no ar com os 2 bancos.
 
 ## Trilha C# — `servico-cidadao-dotnet/` (seção C1)
 
@@ -1013,11 +1015,11 @@ Gravar essa sequência: é a base do vídeo do Mobile e do pitch.
 
 ## Prompts para cada etapa
 
-Abra um chat **na pasta do projeto** e cole o prompt da etapa, trocando o código (CS1, J3, M4…):
+Abra o chat **na pasta local do repositório daquela matéria** (veja a tabela da B1) e cole o prompt da etapa, trocando o código (CS1, J3, M4…):
 
 > Leia o PLANO.md (Partes B e F e a seção da matéria). Vamos fazer a etapa **CS1** da Parte F. Siga exatamente os nomes, portas e contratos da Parte B. No fim, rode o checkpoint da etapa, me mostre o resultado e registre o uso de IA no `prompts.md`.
 
 **Regras para todos os chats:**
 - Uma etapa por vez, e commit a cada checkpoint batido.
-- Se precisar mudar um contrato, atualize a Parte B do PLANO.md **no mesmo commit**.
+- Se precisar mudar um contrato, atualize a Parte B do PLANO.md **no mesmo commit** e avise o Pedro, para ele copiar o PLANO.md para os outros repositórios.
 - Você precisa saber explicar cada linha, porque o PDF exige que todos os integrantes expliquem o projeto inteiro.
