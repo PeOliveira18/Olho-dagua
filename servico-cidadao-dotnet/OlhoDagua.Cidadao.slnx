@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/OlhoDagua.Cidadao.Api/OlhoDagua.Cidadao.Api.csproj" />
+    <Project Path="src/OlhoDagua.Cidadao.Application/OlhoDagua.Cidadao.Application.csproj" />
+    <Project Path="src/OlhoDagua.Cidadao.Domain/OlhoDagua.Cidadao.Domain.csproj" />
+    <Project Path="src/OlhoDagua.Cidadao.Infrastructure/OlhoDagua.Cidadao.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/OlhoDagua.Cidadao.Tests/OlhoDagua.Cidadao.Tests.csproj" />
+  </Folder>
+</Solution>

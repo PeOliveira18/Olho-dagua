@@ -1,0 +1,90 @@
+# Exemplos de chamadas ao Serviço do Cidadão.
+# Abra no Visual Studio, Rider ou VS Code (extensão REST Client) e clique em "Send Request".
+
+@base = http://localhost:5080/api
+@chave = olhodagua-dev-chave
+@dispositivo = 11111111-2222-3333-4444-555555555555
+
+### Áreas de risco monitoradas
+GET {{base}}/areas
+
+### Detalhe da área 1 (alertas ativos e relatos em aberto)
+GET {{base}}/areas/1
+
+### Ranking das áreas com mais relatos nos últimos 7 dias
+GET {{base}}/areas/ranking?dias=7
+
+### Inscrever o celular na área 1 (sem dados pessoais)
+POST {{base}}/inscricoes
+Content-Type: application/json
+
+{
+  "dispositivoId": "{{dispositivo}}",
+  "areaRiscoId": 1,
+  "prefereFonteGrande": true,
+  "prefereAltoContraste": false
+}
+
+### Contrato ②: a Telemetria avisa que o córrego subiu para ALERTA
+POST {{base}}/alertas/sensor
+Content-Type: application/json
+X-Api-Key: {{chave}}
+
+{
+  "areaRiscoId": 1,
+  "sensorCodigo": "SNS-PANTANAL-01",
+  "nivelCm": 235.0,
+  "faixa": "ALERTA",
+  "detectadoEm": "2026-11-15T18:42:00-03:00"
+}
+
+### Mesma chamada sem a chave → 401
+POST {{base}}/alertas/sensor
+Content-Type: application/json
+
+{ "areaRiscoId": 1, "sensorCodigo": "SNS-PANTANAL-01", "nivelCm": 235.0, "faixa": "ALERTA" }
+
+### Alertas ativos da área 1, do mais prioritário ao menos prioritário
+GET {{base}}/alertas?areaId=1&ativos=true
+
+### Contrato ③: o nível voltou ao normal, encerrar o alerta (troque o id)
+PATCH {{base}}/alertas/1/encerrar
+X-Api-Key: {{chave}}
+
+### Previsão do modelo de ML: 85% de chance de chuva forte em 3 h
+POST {{base}}/alertas/previsao
+Content-Type: application/json
+X-Api-Key: {{chave}}
+
+{ "areaRiscoId": 1, "probabilidadeChuvaForte": 0.85, "janelaHoras": 3 }
+
+### Morador relata alagamento (a área é descoberta pela localização). Repita com outro idLocalApp
+### três vezes para gerar um alerta comunitário. O CPF e o telefone são mascarados.
+POST {{base}}/ocorrencias
+Content-Type: application/json
+
+{
+  "tipo": "RUA_ALAGADA",
+  "descricao": "Rua tomada até o joelho. CPF 123.456.789-09, tel (11) 98888-7777",
+  "latitude": -23.4990,
+  "longitude": -46.4425,
+  "idLocalApp": "aaaaaaaa-0000-0000-0000-000000000001"
+}
+
+### Relatos da área 1
+GET {{base}}/ocorrencias?areaId=1
+
+### Outro morador confirma o relato 1
+POST {{base}}/ocorrencias/1/confirmar
+
+### Abrigos com vaga mais próximos do morador (só acessíveis)
+GET {{base}}/abrigos/proximos?lat=-23.4985&lon=-46.4430&acessivel=true&limite=3
+
+### Registrar a chegada de 4 pessoas no abrigo 1
+POST {{base}}/abrigos/1/entrada
+Content-Type: application/json
+
+{ "pessoas": 4 }
+
+### Pushes simulados enviados ao celular inscrito
+GET {{base}}/notificacoes?dispositivoId={{dispositivo}}
