@@ -4,6 +4,8 @@
 #
 #   docker compose -f infra/docker-compose.yml up -d
 #
+name: olhodagua   # mesmo nome nos repositórios C# e SOA → o mesmo container serve os dois
+
 services:
   db:
     image: postgres:16

@@ -36,20 +36,28 @@ flowchart LR
 
 **Por que dois serviços:** cada um tem uma responsabilidade clara. A Telemetria só conversa com hardware (muitas leituras, regras de limite). O serviço do Cidadão conversa com pessoas (alertas, relatos, abrigos). Eles se integram por REST: é a parte "orientada a serviços" da entrega de SOA, e deixa as entregas de SOA e C# separadas.
 
-## Estrutura do repositório
+<!-- ESTE-REPO:INICIO -->
+## Este repositório: C# Software Development
+
+Entrega da disciplina **C# Software Development**: o **Serviço do Cidadão**, uma Web API em .NET 10 com EF Core e PostgreSQL. É ele que guarda áreas de risco, alertas, relatos dos moradores, abrigos e inscrições, e é o serviço que o app consome.
 
 ```
-olho-dagua/
-├── README.md                    ← esta Ficha
-├── prompts.md                   ← registro do uso de IA (obrigatório)
-├── docs/                        ← domínio, contratos, fotos e entrevista
-├── servico-cidadao-dotnet/      ← C# Software Development
-├── servico-telemetria-java/     ← SOA e Web Services
-├── app-mobile/                  ← Mobile Development & IOT
-├── iot/                         ← Physical Computing (Wokwi)
-├── ml/                          ← IA & ML
-└── infra/                       ← docker-compose + scripts Linux (Operating Systems)
+Olho-dagua/
+├── README.md                 ← esta Ficha
+├── PLANO.md                  ← plano mestre do projeto (cópia oficial)
+├── prompts.md                ← registro do uso de IA
+├── infra/                    ← docker-compose do PostgreSQL
+└── servico-cidadao-dotnet/   ← código da Web API (instruções no README da pasta)
 ```
+<!-- ESTE-REPO:FIM -->
+
+## Repositórios do projeto
+
+| Parte | Disciplina | Repositório |
+|---|---|---|
+| Serviço do Cidadão (.NET) | C# Software Development | https://github.com/PeOliveira18/Olho-dagua |
+| Serviço de Telemetria (Java) | SOA e Web Services | https://github.com/PeOliveira18/GlobalSolution-SOA |
+| App do morador (Expo) | Mobile Development & IOT | https://github.com/PeOliveira18/GlobalSolution-Mobile |
 
 ## Plano do projeto
 
