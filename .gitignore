@@ -1,0 +1,35 @@
+# segredos
+.env
+*.env.local
+
+# .NET
+bin/
+obj/
+*.user
+.vs/
+TestResults/
+
+# Java
+target/
+*.class
+.mvn/wrapper/maven-wrapper.jar
+
+# Node / Expo
+node_modules/
+.expo/
+dist/
+web-build/
+*.tsbuildinfo
+
+# Python / ML
+__pycache__/
+.ipynb_checkpoints/
+.venv/
+ml/dados/brutos/
+
+# IDEs e SO
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
