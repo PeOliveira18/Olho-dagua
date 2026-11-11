@@ -23,7 +23,7 @@ internal sealed class AreaRiscoConfig : IEntityTypeConfiguration<AreaRisco>
 {
     public void Configure(EntityTypeBuilder<AreaRisco> b)
     {
-        b.ToTable("AreasRisco");
+        b.ToTable("OD_AREAS_RISCO");
         b.HasKey(a => a.Id);
         b.Property(a => a.Nome).HasMaxLength(120).IsRequired();
         b.Property(a => a.Bairro).HasMaxLength(120).IsRequired();
@@ -42,7 +42,7 @@ internal sealed class AlertaConfig : IEntityTypeConfiguration<Alerta>
 {
     public void Configure(EntityTypeBuilder<Alerta> b)
     {
-        b.ToTable("Alertas");
+        b.ToTable("OD_ALERTAS");
         b.HasKey(a => a.Id);
 
         b.HasDiscriminator<string>("TipoAlerta")
@@ -69,7 +69,7 @@ internal sealed class OcorrenciaConfig : IEntityTypeConfiguration<Ocorrencia>
 {
     public void Configure(EntityTypeBuilder<Ocorrencia> b)
     {
-        b.ToTable("Ocorrencias");
+        b.ToTable("OD_OCORRENCIAS");
         b.HasKey(o => o.Id);
         b.Property(o => o.Tipo).HasConversion<string>().HasMaxLength(30);
         b.Property(o => o.Status).HasConversion<string>().HasMaxLength(20);
@@ -84,12 +84,12 @@ internal sealed class AbrigoConfig : IEntityTypeConfiguration<Abrigo>
 {
     public void Configure(EntityTypeBuilder<Abrigo> b)
     {
-        b.ToTable("Abrigos");
+        b.ToTable("OD_ABRIGOS");
         b.HasKey(a => a.Id);
         b.Property(a => a.Nome).HasMaxLength(120).IsRequired();
         b.Property(a => a.Endereco).HasMaxLength(200).IsRequired();
         b.MapearCoordenada(a => a.Local);
-        b.ToTable(t => t.HasCheckConstraint("CK_Abrigos_Ocupacao", "\"Ocupacao\" >= 0 AND \"Ocupacao\" <= \"Capacidade\""));
+        b.ToTable(t => t.HasCheckConstraint("CK_OD_ABRIGOS_OCUPACAO", "\"Ocupacao\" >= 0 AND \"Ocupacao\" <= \"Capacidade\""));
     }
 }
 
@@ -97,7 +97,7 @@ internal sealed class InscricaoConfig : IEntityTypeConfiguration<Inscricao>
 {
     public void Configure(EntityTypeBuilder<Inscricao> b)
     {
-        b.ToTable("Inscricoes");
+        b.ToTable("OD_INSCRICOES");
         b.HasKey(i => i.Id);
         b.HasIndex(i => i.DispositivoId).IsUnique();
         b.HasOne(i => i.AreaRisco).WithMany().HasForeignKey(i => i.AreaRiscoId).OnDelete(DeleteBehavior.Restrict);

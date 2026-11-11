@@ -17,27 +17,29 @@ Dois outros sistemas usam esta API: o **app Expo** consulta e envia dados, e o *
 | | |
 |---|---|
 | Plataforma | .NET 10 · ASP.NET Core Web API (controllers) |
-| Banco | PostgreSQL 16 (Docker) · Entity Framework Core 10 + Npgsql · migrations |
+| Banco | **Oracle Database 19c da FIAP** (`oracle.fiap.com.br`) · Entity Framework Core 10 + `Oracle.EntityFrameworkCore` · migrations |
 | Documentação | OpenAPI nativo do .NET + **Scalar**, em `http://localhost:5080/scalar` |
 | Testes | xUnit · EF Core InMemory · FakeTimeProvider (**47 testes**) |
 
 ## Como rodar
 
-**Pré-requisitos:** .NET SDK 10, Docker Desktop aberto e a ferramenta do EF (`dotnet tool install --global dotnet-ef`).
+**Pré-requisitos:** .NET SDK 10, a ferramenta do EF (`dotnet tool install --global dotnet-ef`) e um usuário do **Oracle da FIAP** (RM e senha).
 
-1. Na raiz do repositório, suba o banco. Ele cria os bancos `cidadao` e `telemetria`.
-   ```bash
-   docker compose -f infra/docker-compose.yml up -d
-   ```
-2. Entre na pasta do serviço:
+1. Entre na pasta do serviço:
    ```bash
    cd servico-cidadao-dotnet
    ```
-3. Rode a API. Em Development ela aplica as migrations e cria os dados de demonstração sozinha.
+2. Grave a conexão com o Oracle no *user-secrets* do .NET, trocando `SEU_RM` e `SUA_SENHA`. A senha fica guardada no seu usuário do Windows, fora do projeto, e nunca vai para o Git.
+   ```bash
+   dotnet user-secrets set "ConnectionStrings:Default" "User Id=SEU_RM;Password=SUA_SENHA;Data Source=oracle.fiap.com.br:1521/ORCL" --project src/OlhoDagua.Cidadao.Api
+   ```
+3. Rode a API. Em Development ela aplica as migrations no seu schema e cria os dados de demonstração sozinha.
    ```bash
    dotnet run --project src/OlhoDagua.Cidadao.Api
    ```
 4. Abra a documentação interativa em http://localhost:5080/scalar.
+
+As tabelas criadas no schema têm o prefixo `OD_` (`OD_AREAS_RISCO`, `OD_ALERTAS`, `OD_OCORRENCIAS`, `OD_ABRIGOS`, `OD_INSCRICOES`), e o histórico de migrations fica em `OD_EF_MIGRATIONS_HISTORY`. Assim o projeto convive com tabelas de outras disciplinas no mesmo usuário do Oracle.
 
 **Outros comandos:**
 - Rodar os testes:
@@ -57,11 +59,11 @@ Dois outros sistemas usam esta API: o **app Expo** consulta e envia dados, e o *
   dotnet ef database update -p src/OlhoDagua.Cidadao.Infrastructure -s src/OlhoDagua.Cidadao.Api
   ```
 
-**Configuração** (`appsettings.Development.json`):
+**Configuração:**
 
 | Chave | Valor em desenvolvimento |
 |---|---|
-| `ConnectionStrings:Default` | `Host=localhost;Port=5432;Database=cidadao;Username=olho;Password=olho123` |
+| `ConnectionStrings:Default` | Conexão com o Oracle da FIAP, gravada no *user-secrets* (passo 2 acima), nunca no repositório |
 | `Integracao:ApiKey` | `olhodagua-dev-chave`: header `X-Api-Key` exigido nas rotas usadas pela Telemetria e pelo ML |
 | `Notificacao:Tipo` | `PushSimulado` (padrão) ou `Console`: troca a implementação de `INotificador` pela DI |
 
@@ -209,7 +211,7 @@ Os exemplos prontos estão em [`OlhoDagua.Cidadao.http`](OlhoDagua.Cidadao.http)
 |---|---|
 | **POO (3,0)** | **Herança e polimorfismo:** `Alerta` é abstrata, e as três subclasses (`AlertaSensor`, `AlertaComunitario`, `AlertaPrevisao`) implementam do seu jeito `GerarMensagem()` e `CalcularPrioridade()` (veja [`Domain/Entidades`](src/OlhoDagua.Cidadao.Domain/Entidades)). **Encapsulamento:** setters privados e estado alterado só por métodos que validam, como `Abrigo.RegistrarEntrada`, `Ocorrencia.Confirmar` e `Alerta.Encerrar`. **Value object** imutável: [`Coordenada`](src/OlhoDagua.Cidadao.Domain/ValueObjects/Coordenada.cs) (Haversine). **Hierarquia de exceções de domínio:** `DominioException` → `ConflitoDominioException` → `AbrigoSemVagaException`. **Pattern matching por tipo** em [`Mapeadores`](src/OlhoDagua.Cidadao.Application/Mapeamento/Mapeadores.cs). |
 | **Web API (2,5)** | Controllers REST em [`Api/Controllers`](src/OlhoDagua.Cidadao.Api/Controllers) com os status codes corretos (201 + `Location`, 204, 400, 401, 404, 409), DTOs separados das entidades, validação com Data Annotations, filtro [`ExigeApiKey`](src/OlhoDagua.Cidadao.Api/Infra/ExigeApiKeyAttribute.cs), [`TratadorDeErros`](src/OlhoDagua.Cidadao.Api/Infra/TratadorDeErros.cs) gerando ProblemDetails, CORS e documentação no Scalar. |
-| **EF Core + LINQ (1,5)** | [`CidadaoDbContext`](src/OlhoDagua.Cidadao.Infrastructure/Persistencia/CidadaoDbContext.cs) e [`Configuracoes`](src/OlhoDagua.Cidadao.Infrastructure/Persistencia/Configuracoes.cs): **TPH** para os alertas (coluna `TipoAlerta`), `Coordenada` como owned type, enums como texto, índice único e check constraint. Migration em [`Persistencia/Migrations`](src/OlhoDagua.Cidadao.Infrastructure/Persistencia/Migrations). **LINQ** em [`Repositorios`](src/OlhoDagua.Cidadao.Infrastructure/Repositorios/Repositorios.cs): ranking com subconsulta traduzida para SQL, `OfType<T>()` sobre o TPH, filtros compostos; e LINQ to Objects nos serviços (ordenação por prioridade polimórfica e abrigos por distância). |
+| **EF Core + LINQ (1,5)** | [`CidadaoDbContext`](src/OlhoDagua.Cidadao.Infrastructure/Persistencia/CidadaoDbContext.cs) e [`Configuracoes`](src/OlhoDagua.Cidadao.Infrastructure/Persistencia/Configuracoes.cs): banco **Oracle 19c**, **TPH** para os alertas (coluna `TipoAlerta`), `Coordenada` como owned type, enums como texto, índice único, check constraint e tabela de histórico de migrations própria. Migration em [`Persistencia/Migrations`](src/OlhoDagua.Cidadao.Infrastructure/Persistencia/Migrations). **LINQ** em [`Repositorios`](src/OlhoDagua.Cidadao.Infrastructure/Repositorios/Repositorios.cs): ranking com subconsulta traduzida para SQL, `OfType<T>()` sobre o TPH, filtros compostos; e LINQ to Objects nos serviços (ordenação por prioridade polimórfica e abrigos por distância). |
 | **Async/Await (1,0)** | Toda a cadeia é assíncrona (controller → serviço → repositório → EF Core) e repassa `CancellationToken`. O notificador push simula a latência com `await Task.Delay`. |
 | **Qualidade do código (2,0)** | Camadas com dependências para dentro; **injeção de dependência** por interfaces (`IRepositorio<T>`, serviços, `INotificador` com 2 implementações trocáveis pela configuração, `TimeProvider`); **47 testes** xUnit; build sem avisos; nenhum pacote vulnerável; este README. |
 
@@ -225,12 +227,13 @@ Os exemplos prontos estão em [`OlhoDagua.Cidadao.http`](OlhoDagua.Cidadao.http)
 
 ## Evidências
 
-- [`docs/evidencia-teste-ponta-a-ponta.txt`](docs/evidencia-teste-ponta-a-ponta.txt): saída real do roteiro ponta a ponta, com o banco zerado antes.
+- [`docs/evidencia-teste-ponta-a-ponta.txt`](docs/evidencia-teste-ponta-a-ponta.txt): saída real do roteiro ponta a ponta contra o Oracle da FIAP, com as tabelas zeradas antes.
 - [`docs/evidencia-testes-unitarios.txt`](docs/evidencia-testes-unitarios.txt): os 47 testes aprovados.
 - [`docs/openapi.json`](docs/openapi.json): a especificação OpenAPI gerada pela API.
+
 ### Prints da API em execução
 
-Os prints foram tirados com a API rodando contra o PostgreSQL, depois do roteiro ponta a ponta e de três alertas de demonstração (todos os dados são simulados).
+Os prints foram tirados com a API rodando contra o Oracle da FIAP, depois do roteiro ponta a ponta e de três alertas de demonstração (todos os dados são simulados).
 
 **1. Documentação no Scalar:** título, descrição e grupos de endpoints.
 ![Visão geral do Scalar](docs/prints/01-scalar-visao-geral.png)

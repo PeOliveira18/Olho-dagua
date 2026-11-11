@@ -2,8 +2,8 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using OlhoDagua.Cidadao.Infrastructure.Persistencia;
+using Oracle.EntityFrameworkCore.Metadata;
 
 #nullable disable
 
@@ -17,50 +17,50 @@ namespace OlhoDagua.Cidadao.Infrastructure.Persistencia.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "10.0.14")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+            OracleModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("OlhoDagua.Cidadao.Domain.Entidades.Abrigo", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<bool>("AceitaAnimais")
-                        .HasColumnType("boolean");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("Acessivel")
-                        .HasColumnType("boolean");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<int>("AreaRiscoId")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("Capacidade")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("Endereco")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("NVARCHAR2(200)");
 
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasMaxLength(120)
-                        .HasColumnType("character varying(120)");
+                        .HasColumnType("NVARCHAR2(120)");
 
                     b.Property<int>("Ocupacao")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AreaRiscoId");
 
-                    b.ToTable("Abrigos", null, t =>
+                    b.ToTable("OD_ABRIGOS", null, t =>
                         {
-                            t.HasCheckConstraint("CK_Abrigos_Ocupacao", "\"Ocupacao\" >= 0 AND \"Ocupacao\" <= \"Capacidade\"");
+                            t.HasCheckConstraint("CK_OD_ABRIGOS_OCUPACAO", "\"Ocupacao\" >= 0 AND \"Ocupacao\" <= \"Capacidade\"");
                         });
                 });
 
@@ -68,34 +68,34 @@ namespace OlhoDagua.Cidadao.Infrastructure.Persistencia.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AreaRiscoId")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<DateTimeOffset>("CriadoEm")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
 
                     b.Property<DateTimeOffset?>("EncerradoEm")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
 
                     b.Property<string>("Severidade")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("NVARCHAR2(20)");
 
                     b.Property<string>("TipoAlerta")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("NVARCHAR2(20)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AreaRiscoId", "EncerradoEm");
 
-                    b.ToTable("Alertas", (string)null);
+                    b.ToTable("OD_ALERTAS", (string)null);
 
                     b.HasDiscriminator<string>("TipoAlerta").HasValue("Alerta");
 
@@ -106,56 +106,56 @@ namespace OlhoDagua.Cidadao.Infrastructure.Persistencia.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Bairro")
                         .IsRequired()
                         .HasMaxLength(120)
-                        .HasColumnType("character varying(120)");
+                        .HasColumnType("NVARCHAR2(120)");
 
                     b.Property<int>("NivelRiscoHistorico")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasMaxLength(120)
-                        .HasColumnType("character varying(120)");
+                        .HasColumnType("NVARCHAR2(120)");
 
                     b.Property<int>("RaioMetros")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("AreasRisco", (string)null);
+                    b.ToTable("OD_AREAS_RISCO", (string)null);
                 });
 
             modelBuilder.Entity("OlhoDagua.Cidadao.Domain.Entidades.Inscricao", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AreaRiscoId")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<DateTimeOffset?>("AtualizadaEm")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
 
                     b.Property<DateTimeOffset>("CriadaEm")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
 
                     b.Property<Guid>("DispositivoId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<bool>("PrefereAltoContraste")
-                        .HasColumnType("boolean");
+                        .HasColumnType("NUMBER(1)");
 
                     b.Property<bool>("PrefereFonteGrande")
-                        .HasColumnType("boolean");
+                        .HasColumnType("NUMBER(1)");
 
                     b.HasKey("Id");
 
@@ -164,45 +164,45 @@ namespace OlhoDagua.Cidadao.Infrastructure.Persistencia.Migrations
                     b.HasIndex("DispositivoId")
                         .IsUnique();
 
-                    b.ToTable("Inscricoes", (string)null);
+                    b.ToTable("OD_INSCRICOES", (string)null);
                 });
 
             modelBuilder.Entity("OlhoDagua.Cidadao.Domain.Entidades.Ocorrencia", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("AreaRiscoId")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("Confirmacoes")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<DateTimeOffset>("CriadaEm")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
 
                     b.Property<string>("Descricao")
                         .HasMaxLength(280)
-                        .HasColumnType("character varying(280)");
+                        .HasColumnType("NVARCHAR2(280)");
 
                     b.Property<Guid>("IdLocalApp")
-                        .HasColumnType("uuid");
+                        .HasColumnType("RAW(16)");
 
                     b.Property<DateTimeOffset?>("ResolvidaEm")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("NVARCHAR2(20)");
 
                     b.Property<string>("Tipo")
                         .IsRequired()
                         .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
+                        .HasColumnType("NVARCHAR2(30)");
 
                     b.HasKey("Id");
 
@@ -211,7 +211,7 @@ namespace OlhoDagua.Cidadao.Infrastructure.Persistencia.Migrations
 
                     b.HasIndex("AreaRiscoId", "CriadaEm");
 
-                    b.ToTable("Ocorrencias", (string)null);
+                    b.ToTable("OD_OCORRENCIAS", (string)null);
                 });
 
             modelBuilder.Entity("OlhoDagua.Cidadao.Domain.Entidades.AlertaComunitario", b =>
@@ -219,7 +219,7 @@ namespace OlhoDagua.Cidadao.Infrastructure.Persistencia.Migrations
                     b.HasBaseType("OlhoDagua.Cidadao.Domain.Entidades.Alerta");
 
                     b.Property<int>("QuantidadeRelatos")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.HasDiscriminator().HasValue("COMUNITARIO");
                 });
@@ -229,10 +229,10 @@ namespace OlhoDagua.Cidadao.Infrastructure.Persistencia.Migrations
                     b.HasBaseType("OlhoDagua.Cidadao.Domain.Entidades.Alerta");
 
                     b.Property<int>("JanelaHoras")
-                        .HasColumnType("integer");
+                        .HasColumnType("NUMBER(10)");
 
                     b.Property<double>("ProbabilidadeChuvaForte")
-                        .HasColumnType("double precision");
+                        .HasColumnType("BINARY_DOUBLE");
 
                     b.HasDiscriminator().HasValue("PREVISAO");
                 });
@@ -244,15 +244,15 @@ namespace OlhoDagua.Cidadao.Infrastructure.Persistencia.Migrations
                     b.Property<string>("Faixa")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("NVARCHAR2(20)");
 
                     b.Property<double>("NivelCm")
-                        .HasColumnType("double precision");
+                        .HasColumnType("BINARY_DOUBLE");
 
                     b.Property<string>("SensorCodigo")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("NVARCHAR2(50)");
 
                     b.HasDiscriminator().HasValue("SENSOR");
                 });
@@ -268,19 +268,19 @@ namespace OlhoDagua.Cidadao.Infrastructure.Persistencia.Migrations
                     b.OwnsOne("OlhoDagua.Cidadao.Domain.ValueObjects.Coordenada", "Local", b1 =>
                         {
                             b1.Property<int>("AbrigoId")
-                                .HasColumnType("integer");
+                                .HasColumnType("NUMBER(10)");
 
                             b1.Property<double>("Latitude")
-                                .HasColumnType("double precision")
+                                .HasColumnType("BINARY_DOUBLE")
                                 .HasColumnName("Latitude");
 
                             b1.Property<double>("Longitude")
-                                .HasColumnType("double precision")
+                                .HasColumnType("BINARY_DOUBLE")
                                 .HasColumnName("Longitude");
 
                             b1.HasKey("AbrigoId");
 
-                            b1.ToTable("Abrigos");
+                            b1.ToTable("OD_ABRIGOS");
 
                             b1.WithOwner()
                                 .HasForeignKey("AbrigoId");
@@ -308,19 +308,19 @@ namespace OlhoDagua.Cidadao.Infrastructure.Persistencia.Migrations
                     b.OwnsOne("OlhoDagua.Cidadao.Domain.ValueObjects.Coordenada", "Centro", b1 =>
                         {
                             b1.Property<int>("AreaRiscoId")
-                                .HasColumnType("integer");
+                                .HasColumnType("NUMBER(10)");
 
                             b1.Property<double>("Latitude")
-                                .HasColumnType("double precision")
+                                .HasColumnType("BINARY_DOUBLE")
                                 .HasColumnName("Latitude");
 
                             b1.Property<double>("Longitude")
-                                .HasColumnType("double precision")
+                                .HasColumnType("BINARY_DOUBLE")
                                 .HasColumnName("Longitude");
 
                             b1.HasKey("AreaRiscoId");
 
-                            b1.ToTable("AreasRisco");
+                            b1.ToTable("OD_AREAS_RISCO");
 
                             b1.WithOwner()
                                 .HasForeignKey("AreaRiscoId");
@@ -352,19 +352,19 @@ namespace OlhoDagua.Cidadao.Infrastructure.Persistencia.Migrations
                     b.OwnsOne("OlhoDagua.Cidadao.Domain.ValueObjects.Coordenada", "Local", b1 =>
                         {
                             b1.Property<int>("OcorrenciaId")
-                                .HasColumnType("integer");
+                                .HasColumnType("NUMBER(10)");
 
                             b1.Property<double>("Latitude")
-                                .HasColumnType("double precision")
+                                .HasColumnType("BINARY_DOUBLE")
                                 .HasColumnName("Latitude");
 
                             b1.Property<double>("Longitude")
-                                .HasColumnType("double precision")
+                                .HasColumnType("BINARY_DOUBLE")
                                 .HasColumnName("Longitude");
 
                             b1.HasKey("OcorrenciaId");
 
-                            b1.ToTable("Ocorrencias");
+                            b1.ToTable("OD_OCORRENCIAS");
 
                             b1.WithOwner()
                                 .HasForeignKey("OcorrenciaId");

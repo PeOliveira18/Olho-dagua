@@ -26,7 +26,7 @@ flowchart LR
     end
     TEL -- "nível cruzou limite<br/>POST /api/alertas/sensor" --> CID
     subgraph CS [Serviço do Cidadão · C# .NET]
-      CID[API Cidadão] --> PGC[(PostgreSQL<br/>cidadao)]
+      CID[API Cidadão] --> ORA[(Oracle 19c FIAP<br/>tabelas OD_)]
     end
     APP[App Expo<br/>React Native + TS] -- alertas, abrigos, relatos --> CID
     APP -- nível atual do córrego --> TEL
@@ -36,20 +36,17 @@ flowchart LR
 
 **Por que dois serviços:** cada um tem uma responsabilidade clara. A Telemetria só conversa com hardware (muitas leituras, regras de limite). O serviço do Cidadão conversa com pessoas (alertas, relatos, abrigos). Eles se integram por REST: é a parte "orientada a serviços" da entrega de SOA, e deixa as entregas de SOA e C# separadas.
 
-<!-- ESTE-REPO:INICIO -->
 ## Este repositório: C# Software Development
 
-Entrega da disciplina **C# Software Development**: o **Serviço do Cidadão**, uma Web API em .NET 10 com EF Core e PostgreSQL. É ele que guarda áreas de risco, alertas, relatos dos moradores, abrigos e inscrições, e é o serviço que o app consome.
+Entrega da disciplina **C# Software Development**: o **Serviço do Cidadão**, uma Web API em .NET 10 com EF Core e o banco Oracle da FIAP. É ele que guarda áreas de risco, alertas, relatos dos moradores, abrigos e inscrições, e é o serviço que o app consome.
 
 ```
 Olho-dagua/
 ├── README.md                 ← esta Ficha
 ├── PLANO.md                  ← plano mestre do projeto (cópia oficial)
 ├── prompts.md                ← registro do uso de IA
-├── infra/                    ← docker-compose do PostgreSQL
 └── servico-cidadao-dotnet/   ← código da Web API (instruções no README da pasta)
 ```
-<!-- ESTE-REPO:FIM -->
 
 ## Repositórios do projeto
 

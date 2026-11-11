@@ -1,2 +1,0 @@
-CREATE DATABASE cidadao;
-CREATE DATABASE telemetria;

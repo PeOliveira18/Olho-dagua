@@ -1,4 +1,4 @@
-# Evidência: execução de scripts/teste-ponta-a-ponta.sh em 08/11/2026 13:14 (banco zerado antes)
+# Evidência: execução de scripts/teste-ponta-a-ponta.sh em 11/11/2026 17:15 contra o Oracle da FIAP (oracle.fiap.com.br, Oracle 19c), com as tabelas zeradas antes
 
 == inscricao (201 ou 200)
 [201]
@@ -12,7 +12,7 @@
 1
 == 3 relatos (1o com CPF e telefone)
 [201] [201] [201] 
-{"id":1,"areaRiscoId":1,"tipo":"RUA_ALAGADA","descricao":"Rua tomada. Sou Maria CPF ***.***.***-09 tel (11) *****-7777","latitude":-23.499,"longitude":-46.443,"status":"ABERTA","confirmacoes":0,"criadaEm":"2026-11-08T16:14:58.2281464+00:00","idLocalApp":"aaaaaaaa-0000-0000-0000-094530000001"}
+{"id":1,"areaRiscoId":1,"tipo":"RUA_ALAGADA","descricao":"Rua tomada. Sou Maria CPF ***.***.***-09 tel (11) *****-7777","latitude":-23.499,"longitude":-46.443,"status":"ABERTA","confirmacoes":0,"criadaEm":"2026-11-11T20:15:33.8096277+00:00","idLocalApp":"aaaaaaaa-0000-0000-0000-699240000001"}
 == reenvio idempotente (200)
 [200]
 == alertas ativos da area 1 (ordem de prioridade)
@@ -22,6 +22,8 @@
 "mensagem":"3 moradores relataram alagamento em Várzea do Jardim Pantanal na última hora. Evite a região e proteja seus pertences."
 "mensagem":"Córrego em ALERTA em Várzea do Jardim Pantanal (2,35 m). Tire documentos e eletrônicos do chão e prepare-se para sair."
 "mensagem":"Córrego em ATENÇÃO em Várzea do Jardim Pantanal: nível em 1,60 m. Fique atento e acompanhe pelo app."
+"mensagem":"3 moradores relataram alagamento em Várzea do Jardim Pantanal na última hora. Evite a região e proteja seus pertences."
+"mensagem":"Córrego em ALERTA em Várzea do Jardim Pantanal (2,35 m). Tire documentos e eletrônicos do chão e prepare-se para sair."
 == encerrar alerta 2 (204, e 204 de novo)
 [204] [204]
 == ranking
@@ -29,7 +31,7 @@
 == detalhe area 1
 {"id":1,"nome":"Várzea do Jardim Pantanal","bairro":"São Miguel Paulista","latitude":-23.4985,"longitude":-46.443,"raioMetros":1200,"nivelRiscoHistorico":5,"alertasAtivos":1,"ocorrenciasAbertas":3}
 == abrigo: entrada de 59 no abrigo 2 (200) e mais 5 (409)
-[200] {"type":"https://tools.ietf.org/html/rfc9110#section-15.5.10","title":"Conflito com o estado atual","status":409,"detail":"O abrigo 'Abrigo Centro Comunitário B (simulado)' tem 1 vaga(s) livre(s) e não comporta 5 pessoa(s).","traceId":"00-c504bf1b8f2c8002d2a1c7d45f658f5d-7dcdddf4052dce21-00"} [409]
+[200] {"type":"https://tools.ietf.org/html/rfc9110#section-15.5.10","title":"Conflito com o estado atual","status":409,"detail":"O abrigo 'Abrigo Centro Comunitário B (simulado)' tem 1 vaga(s) livre(s) e não comporta 5 pessoa(s).","traceId":"00-b579e3ed7c646e097a2fa6d7bcb65927-56accf14a0ef7e64-00"} [409]
 == erros: 404, fora da area (400), validacao (400)
-[404] {"type":"https://tools.ietf.org/html/rfc9110#section-15.5.1","title":"Regra de negócio violada","status":400,"detail":"A localização informada está fora das áreas monitoradas.","traceId":"00-0afc9046eddfc29683d8d16187dedfdd-16e8307a1b86f3a2-00"} [400]
-{"type":"https://tools.ietf.org/html/rfc9110#section-15.5.1","title":"One or more validation errors occurred.","status":400,"errors":{"Tipo":["The Tipo field is required."],"Longitude":["The Longitude field is required."],"IdLocalApp":["The IdLocalApp field is required."]},"traceId":"00-b2e4cc50466bd20679b389715ed130ee-565c8324b1a76726-00"} [400]
+[404] {"type":"https://tools.ietf.org/html/rfc9110#section-15.5.1","title":"Regra de negócio violada","status":400,"detail":"A localização informada está fora das áreas monitoradas.","traceId":"00-c6bf211b6532a57273c552d8748d63af-25a0050124055f41-00"} [400]
+{"type":"https://tools.ietf.org/html/rfc9110#section-15.5.1","title":"One or more validation errors occurred.","status":400,"errors":{"Tipo":["The Tipo field is required."],"Longitude":["The Longitude field is required."],"IdLocalApp":["The IdLocalApp field is required."]},"traceId":"00-282e6dfe3eccad12e5c26821b98723c4-0160ee0a3de768a1-00"} [400]

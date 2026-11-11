@@ -115,7 +115,7 @@ Os repositórios das outras matérias (IoT, ML, OS, Cyber, QA) são criados por 
 - `PLANO.md`, uma cópia deste arquivo
 - `prompts.md`, com o registro de IA daquela matéria
 - `.gitignore` e `.gitattributes`
-- `infra/docker-compose.yml`, só nos repositórios de backend (C# e SOA), para subir o PostgreSQL
+- `infra/docker-compose.yml`, só no repositório de SOA, para subir o PostgreSQL do Serviço de Telemetria
 
 **Fonte da verdade:** a cópia **mestre** do PLANO.md fica no repositório **Olho-dagua**. Se um contrato da Parte B mudar, atualize a cópia mestre e copie o arquivo para os outros repositórios, senão as partes deixam de se encaixar.
 
@@ -127,9 +127,9 @@ Ferramentas já instaladas na máquina: .NET SDK 10, Node 22, Java 23 com Maven 
 
 | Parte | Stack |
 |---|---|
-| Serviço do Cidadão | **.NET 10**, ASP.NET Core Web API (controllers), EF Core 10 + Npgsql, Scalar (UI do OpenAPI), xUnit |
+| Serviço do Cidadão | **.NET 10**, ASP.NET Core Web API (controllers), EF Core 10 + `Oracle.EntityFrameworkCore` (**Oracle 19c da FIAP**), Scalar (UI do OpenAPI), xUnit |
 | Serviço de Telemetria | **Java 21** (compila no JDK 23), Spring Boot na versão estável que o Spring Initializr oferecer, Maven, Spring Data JPA, **Flyway** (+ `flyway-database-postgresql`), springdoc-openapi **na versão compatível com o Boot escolhido** (Boot 3.x → springdoc 2.x · Boot 4.x → springdoc 3.x), JUnit 5 + MockMvc |
-| Banco | **PostgreSQL 16** via Docker, com **dois bancos**: `cidadao` e `telemetria` |
+| Banco | **Serviço do Cidadão:** Oracle 19c da FIAP (`oracle.fiap.com.br:1521/ORCL`), tabelas com prefixo `OD_` e credenciais no *user-secrets*. **Serviço de Telemetria:** PostgreSQL 16 via Docker, banco `telemetria` |
 | App | Expo (versão estável mais recente do `create-expo-app`), React Native + **TypeScript**, **Expo Router**, expo-sqlite, expo-location |
 | IoT | ESP32 DevKit no **Wokwi**, Arduino C++, WiFi `Wokwi-GUEST`, HTTPClient + ArduinoJson |
 | ML | Python 3.11+, Jupyter, pandas, scikit-learn, xgboost, matplotlib |
@@ -968,7 +968,7 @@ Entrega                                                                         
 ## Etapa 0 — Base comum (hoje, ~30 min)
 
 1. ✔ Os 3 repositórios (Olho-dagua, GlobalSolution-SOA e GlobalSolution-Mobile) foram criados e receberam o commit inicial.
-2. Abrir o Docker Desktop e subir o banco **a partir do repositório C# ou do SOA, tanto faz**: `docker compose -f infra/docker-compose.yml up -d`.
+2. Abrir o Docker Desktop e subir o Postgres da Telemetria **a partir do repositório de SOA**: `docker compose -f infra/docker-compose.yml up -d`. O Serviço do Cidadão usa o Oracle da FIAP e não precisa do Docker.
    - Os dois compose são o **mesmo projeto Docker** (`name: olhodagua`), então rodar em qualquer um dos dois sobe o mesmo container `olhodagua-db`. Ele cria os bancos `cidadao` e `telemetria` de uma vez.
    - **Não suba dois Postgres:** ambos usariam a porta 5432.
 3. Conferir que os dois bancos existem: `docker exec -it olhodagua-db psql -U olho -l` deve listar `cidadao` e `telemetria`.
