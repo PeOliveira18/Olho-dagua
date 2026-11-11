@@ -24,7 +24,7 @@ public sealed class AlertasController(IAlertaService servico) : ControllerBase
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Obter(int id, CancellationToken ct) => Ok(await servico.ObterAsync(id, ct));
 
-    /// <summary>Contrato ②: chamado pelo Serviço de Telemetria quando o nível do córrego sobe de faixa.</summary>
+    /// <summary>Contrato 2: chamado pelo Serviço de Telemetria quando o nível do córrego sobe de faixa.</summary>
     [HttpPost("sensor")]
     [ExigeApiKey]
     [ProducesResponseType<AlertaCriadoResponse>(StatusCodes.Status201Created)]
@@ -48,7 +48,7 @@ public sealed class AlertasController(IAlertaService servico) : ControllerBase
         return CreatedAtAction(nameof(Obter), new { id = criado.AlertaId }, criado);
     }
 
-    /// <summary>Contrato ③: encerra o alerta quando o nível volta ao normal. Idempotente.</summary>
+    /// <summary>Contrato 3: encerra o alerta quando o nível volta ao normal. Idempotente.</summary>
     [HttpPatch("{id:int}/encerrar")]
     [ExigeApiKey]
     [ProducesResponseType(StatusCodes.Status204NoContent)]

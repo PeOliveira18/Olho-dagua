@@ -228,7 +228,30 @@ Os exemplos prontos estão em [`OlhoDagua.Cidadao.http`](OlhoDagua.Cidadao.http)
 - [`docs/evidencia-teste-ponta-a-ponta.txt`](docs/evidencia-teste-ponta-a-ponta.txt): saída real do roteiro ponta a ponta, com o banco zerado antes.
 - [`docs/evidencia-testes-unitarios.txt`](docs/evidencia-testes-unitarios.txt): os 47 testes aprovados.
 - [`docs/openapi.json`](docs/openapi.json): a especificação OpenAPI gerada pela API.
-- *Prints do Scalar: a adicionar.*
+### Prints da API em execução
+
+Os prints foram tirados com a API rodando contra o PostgreSQL, depois do roteiro ponta a ponta e de três alertas de demonstração (todos os dados são simulados).
+
+**1. Documentação no Scalar:** título, descrição e grupos de endpoints.
+![Visão geral do Scalar](docs/prints/01-scalar-visao-geral.png)
+
+**2. Contrato 2 (`POST /api/alertas/sensor`):** corpo com a `faixa` como texto, além das respostas 201, 400 e 401.
+![Contrato do alerta de sensor](docs/prints/02-scalar-contrato-alerta-sensor.png)
+
+**3. Requisição executada pelo Scalar:** `GET /api/alertas` respondendo 200 OK. A EMERGÊNCIA do sensor aparece no topo, com prioridade 430.
+![Requisição executada no Scalar](docs/prints/03-scalar-requisicao-alertas.png)
+
+**4. Alertas da área 1:** os três tipos (sensor, previsão e comunitário), ordenados por prioridade e com a mensagem gerada por cada subclasse.
+![Alertas da área 1](docs/prints/04-resposta-alertas-area1.png)
+
+**5. Relatos dos moradores:** CPF e telefone mascarados (`***.***.***-09`, `(11) *****-7777`) e localização arredondada.
+![Relatos com dados pessoais mascarados](docs/prints/05-resposta-ocorrencias-pii-mascarada.png)
+
+**6. Abrigos mais próximos com vaga:** ordenados por distância. O abrigo B está com 59 de 60 vagas ocupadas.
+![Abrigos próximos](docs/prints/06-resposta-abrigos-proximos.png)
+
+**7. Ranking das áreas:** quantidade de relatos nos últimos 7 dias, calculada por LINQ traduzido para SQL.
+![Ranking das áreas](docs/prints/07-resposta-ranking-areas.png)
 
 ## Integrantes
 

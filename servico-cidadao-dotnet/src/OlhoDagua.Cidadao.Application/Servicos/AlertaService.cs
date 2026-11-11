@@ -34,7 +34,7 @@ public sealed class AlertaService(
     }
 
     /// <summary>
-    /// Contrato ②. Um sensor só tem um alerta ativo por vez: quando a faixa sobe,
+    /// Contrato 2. Um sensor só tem um alerta ativo por vez: quando a faixa sobe,
     /// o alerta anterior do mesmo sensor é encerrado e substituído pelo novo.
     /// </summary>
     public async Task<AlertaCriadoResponse> CriarAlertaSensorAsync(CriarAlertaSensorRequest request, CancellationToken ct = default)
@@ -59,7 +59,7 @@ public sealed class AlertaService(
         return await SalvarEPublicarAsync(alerta, area, ct);
     }
 
-    /// <summary>Contrato ③. Idempotente: encerrar um alerta já encerrado não é erro.</summary>
+    /// <summary>Contrato 3. Idempotente: encerrar um alerta já encerrado não é erro.</summary>
     public async Task EncerrarAsync(int id, CancellationToken ct = default)
     {
         var alerta = await alertas.ObterPorIdAsync(id, ct) ?? throw new RecursoNaoEncontradoException("Alerta", id);

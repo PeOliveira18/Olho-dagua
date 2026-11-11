@@ -1,7 +1,8 @@
 {
   "openapi": "3.1.1",
   "info": {
-    "title": "OlhoDagua.Cidadao.Api | v1",
+    "title": "Olho d'Água — Serviço do Cidadão",
+    "description": "API do sistema de alerta comunitário de alagamentos Olho d'Água (Global Solution FIAP 2026.2 · CitizenTech). Guarda as áreas de risco, os alertas (sensor do córrego, comunidade e previsão de chuva), os relatos dos moradores, os abrigos e as inscrições anônimas dos celulares. As rotas marcadas como integração exigem o header X-Api-Key. Todos os dados são simulados.",
     "version": "1.0.0"
   },
   "servers": [
@@ -103,7 +104,7 @@
         "tags": [
           "Alertas"
         ],
-        "summary": "Contrato ②: chamado pelo Serviço de Telemetria quando o nível do córrego sobe de faixa.",
+        "summary": "Contrato 2: chamado pelo Serviço de Telemetria quando o nível do córrego sobe de faixa.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -223,7 +224,7 @@
         "tags": [
           "Alertas"
         ],
-        "summary": "Contrato ③: encerra o alerta quando o nível volta ao normal. Idempotente.",
+        "summary": "Contrato 3: encerra o alerta quando o nível volta ao normal. Idempotente.",
         "parameters": [
           {
             "name": "id",
@@ -1599,7 +1600,13 @@
         }
       },
       "FaixaNivel": {
-        "type": "integer"
+        "enum": [
+          "NORMAL",
+          "ATENCAO",
+          "ALERTA",
+          "EMERGENCIA",
+          null
+        ]
       },
       "InscricaoResponse": {
         "required": [
@@ -1964,13 +1971,27 @@
         }
       },
       "Severidade": {
-        "type": "integer"
+        "enum": [
+          "BAIXA",
+          "MEDIA",
+          "ALTA",
+          "CRITICA"
+        ]
       },
       "StatusOcorrencia": {
-        "type": "integer"
+        "enum": [
+          "ABERTA",
+          "CONFIRMADA",
+          "RESOLVIDA"
+        ]
       },
       "TipoOcorrencia": {
-        "type": "integer"
+        "enum": [
+          "RUA_ALAGADA",
+          "CORREGO_TRANSBORDANDO",
+          "IMOVEL_ATINGIDO",
+          "BUEIRO_ENTUPIDO"
+        ]
       },
       "ValidationProblemDetails": {
         "type": "object",

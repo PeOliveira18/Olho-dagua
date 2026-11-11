@@ -13,15 +13,27 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
+// Enums como texto em MAIÚSCULAS, igual ao contrato: "ALERTA", "RUA_ALAGADA"...
+// Vale para os controllers (AddJsonOptions) e para o gerador do OpenAPI (ConfigureHttpJsonOptions),
+// senão a documentação mostraria os enums como números.
 builder.Services
     .AddControllers()
-    .AddJsonOptions(o =>
-        // Enums como texto em MAIÚSCULAS, igual ao contrato: "ALERTA", "RUA_ALAGADA"...
-        o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseUpper)));
+    .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseUpper)));
+builder.Services.ConfigureHttpJsonOptions(o =>
+    o.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseUpper)));
 
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<TratadorDeErros>();
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(opcoes => opcoes.AddDocumentTransformer((documento, _, _) =>
+{
+    documento.Info.Title = "Olho d'Água — Serviço do Cidadão";
+    documento.Info.Description =
+        "API do sistema de alerta comunitário de alagamentos Olho d'Água (Global Solution FIAP 2026.2 · CitizenTech). " +
+        "Guarda as áreas de risco, os alertas (sensor do córrego, comunidade e previsão de chuva), os relatos dos moradores, " +
+        "os abrigos e as inscrições anônimas dos celulares. As rotas marcadas como integração exigem o header X-Api-Key. " +
+        "Todos os dados são simulados.";
+    return Task.CompletedTask;
+}));
 
 // O app Expo (web) e o celular chamam a API de outra origem.
 builder.Services.AddCors(o => o.AddDefaultPolicy(p => p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));

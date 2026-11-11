@@ -17,7 +17,7 @@ public sealed record RankingAreaResponse(
 
 // ---------- Alertas ----------
 
-/// <summary>Contrato ②: enviado pelo Serviço de Telemetria quando o nível sobe de faixa.</summary>
+/// <summary>Contrato 2: enviado pelo Serviço de Telemetria quando o nível sobe de faixa.</summary>
 public sealed record CriarAlertaSensorRequest(
     [Range(1, int.MaxValue)] int AreaRiscoId,
     [Required, StringLength(40, MinimumLength = 3)] string SensorCodigo,
