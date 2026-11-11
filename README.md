@@ -76,4 +76,8 @@ O planejamento completo (contratos entre serviços, portas, dados de seed, o que
 
 ## Integrantes
 
-*a preencher*
+| Nome | RM |
+|---|---|
+| Pedro Oliveira | 99943 |
+| Debora Ivanowski | 555694 |
+| Diego Cabral | 557817 |

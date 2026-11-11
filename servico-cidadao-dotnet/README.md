@@ -255,4 +255,8 @@ Os prints foram tirados com a API rodando contra o PostgreSQL, depois do roteiro
 
 ## Integrantes
 
-*a preencher*
+| Nome | RM |
+|---|---|
+| Pedro Oliveira | 99943 |
+| Debora Ivanowski | 555694 |
+| Diego Cabral | 557817 |
