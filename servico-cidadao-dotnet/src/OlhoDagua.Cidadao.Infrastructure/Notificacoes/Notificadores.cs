@@ -4,7 +4,6 @@ using OlhoDagua.Cidadao.Application.Abstracoes;
 
 namespace OlhoDagua.Cidadao.Infrastructure.Notificacoes;
 
-/// <summary>Implementação 1: só escreve o alerta no log do servidor.</summary>
 public sealed class NotificadorConsole(ILogger<NotificadorConsole> logger) : INotificador
 {
     public Task NotificarAsync(NotificacaoAlerta notificacao, CancellationToken ct = default)
@@ -18,11 +17,6 @@ public sealed class NotificadorConsole(ILogger<NotificadorConsole> logger) : INo
     }
 }
 
-/// <summary>
-/// Implementação 2: simula o envio de push para cada celular inscrito e guarda
-/// o histórico em memória (consultável em GET /api/notificacoes para a demonstração).
-/// Num ambiente real, aqui entraria o Expo Push ou o Firebase Cloud Messaging.
-/// </summary>
 public sealed class NotificadorPushSimulado(
     IHistoricoNotificacoes historico,
     TimeProvider relogio,
@@ -35,7 +29,7 @@ public sealed class NotificadorPushSimulado(
         foreach (var dispositivo in notificacao.Dispositivos)
         {
             ct.ThrowIfCancellationRequested();
-            await Task.Delay(5, ct); // simula a latência de rede de um provedor de push
+            await Task.Delay(5, ct);
 
             historico.Registrar(new NotificacaoEnviada(
                 dispositivo, notificacao.AlertaId, notificacao.AreaRiscoId,
@@ -47,7 +41,6 @@ public sealed class NotificadorPushSimulado(
     }
 }
 
-/// <summary>Guarda os últimos pushes simulados. Singleton e seguro para várias requisições ao mesmo tempo.</summary>
 public sealed class HistoricoNotificacoesEmMemoria : IHistoricoNotificacoes
 {
     private const int Capacidade = 500;

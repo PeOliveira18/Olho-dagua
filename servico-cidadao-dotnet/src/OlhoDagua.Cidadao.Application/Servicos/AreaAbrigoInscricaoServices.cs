@@ -17,7 +17,6 @@ public sealed class AreaService(IAreaRiscoRepositorio areas, TimeProvider relogi
     {
         var area = await areas.ObterPorIdAsync(id, ct) ?? throw new RecursoNaoEncontradoException("Área de risco", id);
 
-        // Duas consultas independentes disparadas em sequência, cada uma assíncrona.
         var alertasAtivos = await areas.ContarAlertasAtivosAsync(id, ct);
         var ocorrenciasAbertas = await areas.ContarOcorrenciasNaoResolvidasAsync(id, ct);
 
@@ -40,10 +39,6 @@ public sealed class AbrigoService(IAbrigoRepositorio abrigos) : IAbrigoService
     public async Task<AbrigoResponse> ObterAsync(int id, CancellationToken ct = default) =>
         (await ObterOuFalharAsync(id, ct)).ParaResponse();
 
-    /// <summary>
-    /// O filtro (com vaga, acessível) roda no banco; a distância é calculada em memória
-    /// com Haversine, e o LINQ ordena do mais próximo para o mais distante.
-    /// </summary>
     public async Task<IReadOnlyList<AbrigoProximoResponse>> ListarProximosAsync(
         double latitude, double longitude, bool? acessivel, int limite, CancellationToken ct = default)
     {
@@ -85,7 +80,6 @@ public sealed class InscricaoService(
     IAreaRiscoRepositorio areas,
     TimeProvider relogio) : IInscricaoService
 {
-    /// <summary>Cria a inscrição do dispositivo ou atualiza a existente (um dispositivo, uma inscrição).</summary>
     public async Task<Resultado<InscricaoResponse>> SalvarAsync(SalvarInscricaoRequest request, CancellationToken ct = default)
     {
         if (!await areas.ExisteAsync(request.AreaRiscoId, ct))

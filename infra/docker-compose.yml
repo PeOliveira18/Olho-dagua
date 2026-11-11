@@ -1,10 +1,4 @@
-# Olho d'Água — banco de desenvolvimento
-# Sobe só o PostgreSQL com os bancos "cidadao" e "telemetria".
-# Os serviços (.NET e Java) entram aqui depois, na etapa de Operating Systems.
-#
-#   docker compose -f infra/docker-compose.yml up -d
-#
-name: olhodagua   # mesmo nome nos repositórios C# e SOA → o mesmo container serve os dois
+name: olhodagua
 
 services:
   db:

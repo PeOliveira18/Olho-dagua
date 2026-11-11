@@ -17,8 +17,6 @@ public sealed class AlertaService(
     {
         var lista = await alertas.ListarAsync(areaId, somenteAtivos, ct);
 
-        // LINQ to Objects: a prioridade é calculada pelo método polimórfico de cada subclasse,
-        // por isso a ordenação acontece em memória, depois da consulta ao banco.
         return lista
             .OrderByDescending(a => a.Ativo)
             .ThenByDescending(a => a.CalcularPrioridade())
@@ -33,16 +31,11 @@ public sealed class AlertaService(
         return alerta.ParaResponse(alerta.AreaRisco!);
     }
 
-    /// <summary>
-    /// Contrato 2. Um sensor só tem um alerta ativo por vez: quando a faixa sobe,
-    /// o alerta anterior do mesmo sensor é encerrado e substituído pelo novo.
-    /// </summary>
     public async Task<AlertaCriadoResponse> CriarAlertaSensorAsync(CriarAlertaSensorRequest request, CancellationToken ct = default)
     {
         var area = await ObterAreaOuFalharAsync(request.AreaRiscoId, ct);
         var detectadoEm = request.DetectadoEm ?? relogio.GetUtcNow();
 
-        // O alerta anterior termina no instante em que o novo foi detectado (nunca antes de ter começado).
         foreach (var anterior in await alertas.ListarSensorAtivosAsync(request.SensorCodigo, ct))
             anterior.Encerrar(detectadoEm > anterior.CriadoEm ? detectadoEm : anterior.CriadoEm);
 
@@ -59,13 +52,11 @@ public sealed class AlertaService(
         return await SalvarEPublicarAsync(alerta, area, ct);
     }
 
-    /// <summary>Contrato 3. Idempotente: encerrar um alerta já encerrado não é erro.</summary>
     public async Task EncerrarAsync(int id, CancellationToken ct = default)
     {
         var alerta = await alertas.ObterPorIdAsync(id, ct) ?? throw new RecursoNaoEncontradoException("Alerta", id);
         if (!alerta.Ativo) return;
 
-        // Protege contra relógios fora de sincronia entre os serviços: nunca encerra antes da criação.
         var agora = relogio.GetUtcNow();
         alerta.Encerrar(agora > alerta.CriadoEm ? agora : alerta.CriadoEm);
         await alertas.SalvarAlteracoesAsync(ct);

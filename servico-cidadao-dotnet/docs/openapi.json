@@ -63,6 +63,7 @@
         "tags": [
           "Alertas"
         ],
+        "summary": "Detalhe de um alerta.",
         "parameters": [
           {
             "name": "id",
@@ -272,6 +273,7 @@
         "tags": [
           "Areas"
         ],
+        "summary": "Lista as áreas de risco monitoradas.",
         "responses": {
           "200": {
             "description": "OK",
@@ -375,6 +377,7 @@
         "tags": [
           "Abrigos"
         ],
+        "summary": "Lista os abrigos.",
         "parameters": [
           {
             "name": "areaId",
@@ -411,6 +414,7 @@
         "tags": [
           "Abrigos"
         ],
+        "summary": "Detalhe de um abrigo.",
         "parameters": [
           {
             "name": "id",
@@ -603,6 +607,7 @@
         "tags": [
           "Abrigos"
         ],
+        "summary": "Registra a saída de pessoas do abrigo.",
         "parameters": [
           {
             "name": "id",
@@ -674,7 +679,7 @@
         "tags": [
           "Inscricoes"
         ],
-        "summary": "Cria a inscrição (201) ou atualiza a do mesmo dispositivo (200).",
+        "summary": "Cria a inscrição anônima do celular (201) ou atualiza a do mesmo dispositivo (200).",
         "requestBody": {
           "content": {
             "application/json": {
@@ -734,6 +739,7 @@
         "tags": [
           "Inscricoes"
         ],
+        "summary": "Consulta a inscrição de um dispositivo.",
         "parameters": [
           {
             "name": "dispositivoId",
@@ -774,6 +780,7 @@
         "tags": [
           "Notificacoes"
         ],
+        "summary": "Histórico dos pushes simulados (para a demonstração do envio de alertas).",
         "parameters": [
           {
             "name": "dispositivoId",
@@ -861,7 +868,8 @@
         "tags": [
           "Ocorrencias"
         ],
-        "summary": "Registra um relato. Idempotente por idLocalApp: reenviar o mesmo relato\r\ndevolve 200 com o existente, em vez de duplicar. Pode gerar um alerta comunitário.",
+        "summary": "Registra um relato de alagamento.",
+        "description": "Idempotente por idLocalApp: reenviar o mesmo relato devolve 200 com o existente, em vez de duplicar. Pode gerar um alerta comunitário.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -921,6 +929,7 @@
         "tags": [
           "Ocorrencias"
         ],
+        "summary": "Detalhe de um relato.",
         "parameters": [
           {
             "name": "id",
@@ -1014,6 +1023,7 @@
         "tags": [
           "Ocorrencias"
         ],
+        "summary": "Marca o relato como resolvido.",
         "parameters": [
           {
             "name": "id",

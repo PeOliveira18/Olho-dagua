@@ -4,10 +4,6 @@ using OlhoDagua.Cidadao.Domain.ValueObjects;
 
 namespace OlhoDagua.Cidadao.Infrastructure.Persistencia;
 
-/// <summary>
-/// Dados de seed da seção B4 do PLANO.md. Todos simulados (nomes genéricos, coordenadas aproximadas).
-/// Os IDs das áreas são fixos porque o Serviço de Telemetria referencia areaRiscoId 1, 2 e 3.
-/// </summary>
 public static class DbSeeder
 {
     public static async Task SeedAsync(CidadaoDbContext db, CancellationToken ct = default)
@@ -38,7 +34,6 @@ public static class DbSeeder
 
         await db.SaveChangesAsync(ct);
 
-        // IDs inseridos manualmente não avançam a sequência do PostgreSQL: ajusta para o próximo insert não colidir.
         if (db.Database.IsRelational())
             await db.Database.ExecuteSqlRawAsync(
                 "SELECT setval(pg_get_serial_sequence('\"AreasRisco\"', 'Id'), (SELECT MAX(\"Id\") FROM \"AreasRisco\"));", ct);

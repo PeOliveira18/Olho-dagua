@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
-# Roteiro de testes ponta a ponta do Serviço do Cidadão.
-# Pré-requisitos: Postgres no ar (infra/docker-compose.yml) e a API rodando em http://localhost:5080 (dotnet run).
-# Uso: bash scripts/teste-ponta-a-ponta.sh
 B=http://localhost:5080/api; K='X-Api-Key: olhodagua-dev-chave'; J='Content-Type: application/json'
 D=11111111-2222-3333-4444-555555555555
-SUF=$(printf '%06d' $((RANDOM * 30 % 1000000)))   # deixa os idLocalApp únicos a cada execução
+SUF=$(printf '%06d' $((RANDOM * 30 % 1000000)))
 
 echo "== inscricao (201 ou 200)"; curl -s -o /dev/null -w '[%{http_code}]\n' -H "$J" -d "{\"dispositivoId\":\"$D\",\"areaRiscoId\":1,\"prefereFonteGrande\":true,\"prefereAltoContraste\":false}" $B/inscricoes
 echo "== alerta sensor SEM chave (401)"; curl -s -o /dev/null -w '[%{http_code}]\n' -H "$J" -d '{"areaRiscoId":1,"sensorCodigo":"SNS-PANTANAL-01","nivelCm":235,"faixa":"ALERTA"}' $B/alertas/sensor

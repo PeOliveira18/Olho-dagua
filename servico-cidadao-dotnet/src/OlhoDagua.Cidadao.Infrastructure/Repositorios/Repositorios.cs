@@ -8,7 +8,6 @@ using OlhoDagua.Cidadao.Infrastructure.Persistencia;
 
 namespace OlhoDagua.Cidadao.Infrastructure.Repositorios;
 
-/// <summary>Implementação genérica sobre o EF Core: as operações comuns ficam num lugar só.</summary>
 public abstract class RepositorioEf<T>(CidadaoDbContext db) : IRepositorio<T> where T : Entidade
 {
     protected CidadaoDbContext Db { get; } = db;
@@ -37,15 +36,10 @@ public sealed class AreaRiscoRepositorio(CidadaoDbContext db) : RepositorioEf<Ar
     public Task<int> ContarOcorrenciasNaoResolvidasAsync(int areaId, CancellationToken ct = default) =>
         Db.Ocorrencias.CountAsync(o => o.AreaRiscoId == areaId && o.Status != StatusOcorrencia.Resolvida, ct);
 
-    /// <summary>
-    /// LINQ traduzido para SQL: para cada área, conta os relatos do período
-    /// (subconsulta) e ordena pelas que mais sofreram, desempatando pelo histórico.
-    /// </summary>
     public async Task<IReadOnlyList<RankingAreaResponse>> ObterRankingAsync(DateTimeOffset desde, CancellationToken ct = default)
     {
         var desdeUtc = desde.ToUniversalTime();
 
-        // Projeta para um tipo anônimo (que o EF sabe ordenar em SQL) e só no fim monta o DTO.
         var linhas = await Conjunto
             .AsNoTracking()
             .Select(a => new
@@ -81,7 +75,6 @@ public sealed class AlertaRepositorio(CidadaoDbContext db) : RepositorioEf<Alert
     public Task<Alerta?> ObterComAreaAsync(int id, CancellationToken ct = default) =>
         Conjunto.AsNoTracking().Include(a => a.AreaRisco).FirstOrDefaultAsync(a => a.Id == id, ct);
 
-    /// <summary>OfType&lt;T&gt; filtra pela coluna discriminadora do TPH.</summary>
     public Task<AlertaComunitario?> ObterComunitarioAtivoAsync(int areaId, CancellationToken ct = default) =>
         Conjunto.OfType<AlertaComunitario>()
             .Where(a => a.AreaRiscoId == areaId && a.EncerradoEm == null)
@@ -129,7 +122,6 @@ public sealed class AbrigoRepositorio(CidadaoDbContext db) : RepositorioEf<Abrig
 
         if (areaId is not null) consulta = consulta.Where(a => a.AreaRiscoId == areaId);
         if (acessivel is not null) consulta = consulta.Where(a => a.Acessivel == acessivel);
-        // VagasLivres é calculada em C# e não vira SQL; por isso o filtro usa as colunas reais.
         if (somenteComVaga) consulta = consulta.Where(a => a.Ocupacao < a.Capacidade);
 
         return await consulta.OrderBy(a => a.Nome).ToListAsync(ct);

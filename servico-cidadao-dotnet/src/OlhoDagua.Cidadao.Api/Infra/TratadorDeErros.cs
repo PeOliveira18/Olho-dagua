@@ -5,11 +5,6 @@ using OlhoDagua.Cidadao.Domain.Excecoes;
 
 namespace OlhoDagua.Cidadao.Api.Infra;
 
-/// <summary>
-/// Converte exceções em respostas ProblemDetails (RFC 7807), o formato de erro
-/// combinado entre os serviços. Regras de negócio violadas viram 400, conflitos
-/// viram 409, recurso inexistente vira 404 e o resto vira 500 sem vazar detalhes.
-/// </summary>
 public sealed class TratadorDeErros(IProblemDetailsService problemDetails, ILogger<TratadorDeErros> logger)
     : IExceptionHandler
 {

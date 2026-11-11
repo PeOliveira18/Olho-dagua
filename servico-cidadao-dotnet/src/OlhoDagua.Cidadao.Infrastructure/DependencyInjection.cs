@@ -23,7 +23,6 @@ public static class DependencyInjection
         services.AddScoped<IAbrigoRepositorio, AbrigoRepositorio>();
         services.AddScoped<IInscricaoRepositorio, InscricaoRepositorio>();
 
-        // Troca de implementação só pela configuração: "Console" ou "PushSimulado" (padrão).
         services.AddSingleton<IHistoricoNotificacoes, HistoricoNotificacoesEmMemoria>();
         var tipoNotificador = configuration["Notificacao:Tipo"] ?? "PushSimulado";
         if (tipoNotificador.Equals("Console", StringComparison.OrdinalIgnoreCase))

@@ -3,12 +3,6 @@ using OlhoDagua.Cidadao.Domain.Entidades;
 
 namespace OlhoDagua.Cidadao.Application.Servicos;
 
-/// <summary>
-/// Regra: 3 ou mais relatos não resolvidos na mesma área nos últimos 60 minutos
-/// geram um alerta comunitário. Se já existe um ativo, ele é reforçado (conta
-/// mais um relato) em vez de criar outro. O relógio vem do TimeProvider injetado,
-/// o que permite testar a janela de tempo sem esperar uma hora.
-/// </summary>
 public sealed class RegraAlertaComunitario(
     IOcorrenciaRepositorio ocorrencias,
     IAlertaRepositorio alertas,

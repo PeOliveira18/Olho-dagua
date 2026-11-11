@@ -7,7 +7,6 @@ namespace OlhoDagua.Cidadao.Infrastructure.Persistencia;
 
 internal static class ConfiguracaoComum
 {
-    /// <summary>Mapeia o value object Coordenada como owned type (colunas na própria tabela).</summary>
     public static void MapearCoordenada<T>(this EntityTypeBuilder<T> b, System.Linq.Expressions.Expression<Func<T, Coordenada?>> nav)
         where T : class
     {
@@ -30,7 +29,6 @@ internal sealed class AreaRiscoConfig : IEntityTypeConfiguration<AreaRisco>
         b.Property(a => a.Bairro).HasMaxLength(120).IsRequired();
         b.MapearCoordenada(a => a.Centro);
 
-        // Coleções expostas como IReadOnlyCollection: o EF usa os campos privados.
         b.HasMany(a => a.Alertas).WithOne(x => x.AreaRisco).HasForeignKey(x => x.AreaRiscoId).OnDelete(DeleteBehavior.Restrict);
         b.HasMany(a => a.Ocorrencias).WithOne(x => x.AreaRisco).HasForeignKey(x => x.AreaRiscoId).OnDelete(DeleteBehavior.Restrict);
         b.HasMany(a => a.Abrigos).WithOne(x => x.AreaRisco).HasForeignKey(x => x.AreaRiscoId).OnDelete(DeleteBehavior.Restrict);
@@ -47,7 +45,6 @@ internal sealed class AlertaConfig : IEntityTypeConfiguration<Alerta>
         b.ToTable("Alertas");
         b.HasKey(a => a.Id);
 
-        // TPH: os três tipos de alerta ficam na mesma tabela, separados pela coluna TipoAlerta.
         b.HasDiscriminator<string>("TipoAlerta")
             .HasValue<AlertaSensor>("SENSOR")
             .HasValue<AlertaComunitario>("COMUNITARIO")

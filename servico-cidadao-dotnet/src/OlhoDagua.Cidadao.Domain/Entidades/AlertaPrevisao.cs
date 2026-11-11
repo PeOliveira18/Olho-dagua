@@ -4,10 +4,6 @@ using OlhoDagua.Cidadao.Domain.Excecoes;
 
 namespace OlhoDagua.Cidadao.Domain.Entidades;
 
-/// <summary>
-/// Alerta antecipado, vindo do modelo de Machine Learning que estima a chance
-/// de chuva forte nas próximas horas a partir dos dados do INMET.
-/// </summary>
 public class AlertaPrevisao : Alerta
 {
     public double ProbabilidadeChuvaForte { get; private set; }
@@ -15,7 +11,7 @@ public class AlertaPrevisao : Alerta
 
     public override string Tipo => "PREVISAO";
 
-    private AlertaPrevisao() { } // EF Core
+    private AlertaPrevisao() { }
 
     public AlertaPrevisao(int areaRiscoId, double probabilidadeChuvaForte, int janelaHoras, DateTimeOffset criadoEm)
         : base(areaRiscoId, SeveridadeDaProbabilidade(probabilidadeChuvaForte), criadoEm)
@@ -46,6 +42,5 @@ public class AlertaPrevisao : Alerta
                "Deixe documentos e remédios em local alto.";
     }
 
-    /// <summary>É uma estimativa, não uma medição: bônus proporcional à probabilidade, até +20.</summary>
     public override int CalcularPrioridade() => PesoDaSeveridade + (int)Math.Round(ProbabilidadeChuvaForte * 20);
 }

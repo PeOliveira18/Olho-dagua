@@ -9,13 +9,9 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Camadas (injeção de dependência): Application (regras) + Infrastructure (EF Core, notificadores).
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
-// Enums como texto em MAIÚSCULAS, igual ao contrato: "ALERTA", "RUA_ALAGADA"...
-// Vale para os controllers (AddJsonOptions) e para o gerador do OpenAPI (ConfigureHttpJsonOptions),
-// senão a documentação mostraria os enums como números.
 builder.Services
     .AddControllers()
     .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseUpper)));
@@ -35,7 +31,6 @@ builder.Services.AddOpenApi(opcoes => opcoes.AddDocumentTransformer((documento, 
     return Task.CompletedTask;
 }));
 
-// O app Expo (web) e o celular chamam a API de outra origem.
 builder.Services.AddCors(o => o.AddDefaultPolicy(p => p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 
 var app = builder.Build();
@@ -50,7 +45,6 @@ app.MapGet("/", () => Results.Redirect("/scalar")).ExcludeFromDescription();
 
 app.MapControllers();
 
-// Em desenvolvimento, aplica as migrations e popula os dados de demonstração ao subir.
 if (app.Environment.IsDevelopment() || app.Configuration.GetValue<bool>("Banco:MigrarAoIniciar"))
 {
     using var escopo = app.Services.CreateScope();

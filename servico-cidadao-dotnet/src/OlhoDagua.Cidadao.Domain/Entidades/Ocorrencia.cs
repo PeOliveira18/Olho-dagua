@@ -5,10 +5,6 @@ using OlhoDagua.Cidadao.Domain.ValueObjects;
 
 namespace OlhoDagua.Cidadao.Domain.Entidades;
 
-/// <summary>
-/// Relato de um morador ("a rua alagou aqui"). Outros moradores podem
-/// confirmar o relato; com confirmações suficientes ele passa a ser CONFIRMADO.
-/// </summary>
 public class Ocorrencia : Entidade
 {
     public const int TamanhoMaximoDescricao = 280;
@@ -24,13 +20,9 @@ public class Ocorrencia : Entidade
     public DateTimeOffset CriadaEm { get; private set; }
     public DateTimeOffset? ResolvidaEm { get; private set; }
 
-    /// <summary>
-    /// Identificador gerado no celular. Se o app reenviar o mesmo relato
-    /// (sincronização offline), a API reconhece e não duplica.
-    /// </summary>
     public Guid IdLocalApp { get; private set; }
 
-    private Ocorrencia() { } // EF Core
+    private Ocorrencia() { }
 
     public Ocorrencia(int areaRiscoId, TipoOcorrencia tipo, string? descricao, Coordenada local,
                       Guid idLocalApp, DateTimeOffset criadaEm)
@@ -51,7 +43,6 @@ public class Ocorrencia : Entidade
         Status = StatusOcorrencia.Aberta;
     }
 
-    /// <summary>Outro morador viu o mesmo problema.</summary>
     public void Confirmar()
     {
         if (Status == StatusOcorrencia.Resolvida)
@@ -71,7 +62,6 @@ public class Ocorrencia : Entidade
         ResolvidaEm = EmUtc(quando);
     }
 
-    /// <summary>Relatos ainda não resolvidos e feitos dentro da janela contam para o alerta comunitário.</summary>
     public bool ContaParaAlertaComunitario(DateTimeOffset agora, TimeSpan janela) =>
         Status != StatusOcorrencia.Resolvida && CriadaEm >= EmUtc(agora) - janela;
 }

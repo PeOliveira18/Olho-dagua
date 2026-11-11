@@ -4,10 +4,6 @@ using OlhoDagua.Cidadao.Domain.ValueObjects;
 
 namespace OlhoDagua.Cidadao.Domain.Entidades;
 
-/// <summary>
-/// Local seguro (escola, ginásio, igreja) que recebe moradores durante um alagamento.
-/// A ocupação só muda pelos métodos de entrada e saída, que protegem a capacidade.
-/// </summary>
 public class Abrigo : Entidade
 {
     public int AreaRiscoId { get; private set; }
@@ -22,7 +18,7 @@ public class Abrigo : Entidade
 
     public int VagasLivres => Capacidade - Ocupacao;
 
-    private Abrigo() { } // EF Core
+    private Abrigo() { }
 
     public Abrigo(int areaRiscoId, string nome, string endereco, Coordenada local, int capacidade,
                   bool acessivel, bool aceitaAnimais)

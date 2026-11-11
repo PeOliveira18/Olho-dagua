@@ -3,10 +3,6 @@ using OlhoDagua.Cidadao.Domain.Excecoes;
 
 namespace OlhoDagua.Cidadao.Domain.Entidades;
 
-/// <summary>
-/// Alerta disparado pelo Serviço de Telemetria quando o nível do córrego
-/// medido por um sensor sobe de faixa.
-/// </summary>
 public class AlertaSensor : Alerta
 {
     public string SensorCodigo { get; private set; } = null!;
@@ -15,7 +11,7 @@ public class AlertaSensor : Alerta
 
     public override string Tipo => "SENSOR";
 
-    private AlertaSensor() { } // EF Core
+    private AlertaSensor() { }
 
     public AlertaSensor(int areaRiscoId, string sensorCodigo, double nivelCm, FaixaNivel faixa, DateTimeOffset detectadoEm)
         : base(areaRiscoId, SeveridadeDaFaixa(faixa), detectadoEm)
@@ -28,7 +24,6 @@ public class AlertaSensor : Alerta
         Faixa = faixa;
     }
 
-    /// <summary>A faixa NORMAL não gera alerta; as demais definem a severidade.</summary>
     public static Severidade SeveridadeDaFaixa(FaixaNivel faixa) => faixa switch
     {
         FaixaNivel.Atencao => Severidade.Media,
@@ -47,6 +42,5 @@ public class AlertaSensor : Alerta
             $"EMERGÊNCIA em {area.Nome}: córrego a {FormatarMetros(NivelCm)}. Saia agora e vá para o abrigo mais próximo."
     };
 
-    /// <summary>Medição física é a fonte mais confiável: ganha o maior bônus.</summary>
     public override int CalcularPrioridade() => PesoDaSeveridade + 30;
 }

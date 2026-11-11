@@ -25,7 +25,6 @@ public sealed class OcorrenciaService(
 
     public async Task<Resultado<OcorrenciaResponse>> RegistrarAsync(RegistrarOcorrenciaRequest request, CancellationToken ct = default)
     {
-        // Idempotência: o app reenvia relatos da fila offline; o mesmo idLocalApp nunca duplica.
         var existente = await ocorrencias.ObterPorIdLocalAppAsync(request.IdLocalApp!.Value, ct);
         if (existente is not null)
             return new Resultado<OcorrenciaResponse>(existente.ParaResponse(), Criado: false);
@@ -62,10 +61,6 @@ public sealed class OcorrenciaService(
         await ocorrencias.SalvarAlteracoesAsync(ct);
     }
 
-    /// <summary>
-    /// Se o app informou a área, valida; se não, descobre pela localização
-    /// (a área monitorada mais próxima cujo raio contém o ponto).
-    /// </summary>
     private async Task<AreaRisco> DescobrirAreaAsync(int? areaId, Coordenada local, CancellationToken ct)
     {
         if (areaId is not null)

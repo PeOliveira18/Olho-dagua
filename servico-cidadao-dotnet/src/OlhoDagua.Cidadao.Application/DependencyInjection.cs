@@ -7,7 +7,6 @@ namespace OlhoDagua.Cidadao.Application;
 
 public static class DependencyInjection
 {
-    /// <summary>Registra os serviços de aplicação. Scoped = uma instância por requisição HTTP.</summary>
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         services.AddSingleton(TimeProvider.System);

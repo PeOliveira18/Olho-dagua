@@ -45,7 +45,7 @@ public class RegraAlertaComunitarioTests
 
         var alerta = Assert.Single(await cenario.Db.Alertas.OfType<AlertaComunitario>().ToListAsync());
         Assert.Equal(4, alerta.QuantidadeRelatos);
-        Assert.Single(cenario.Publicador.Publicados); // o reforço não manda push de novo
+        Assert.Single(cenario.Publicador.Publicados);
     }
 
     [Fact]
@@ -55,7 +55,7 @@ public class RegraAlertaComunitarioTests
 
         await cenario.Ocorrencias.RegistrarAsync(Relato());
         await cenario.Ocorrencias.RegistrarAsync(Relato());
-        cenario.Relogio.Advance(TimeSpan.FromMinutes(61)); // os dois primeiros "envelhecem"
+        cenario.Relogio.Advance(TimeSpan.FromMinutes(61));
         await cenario.Ocorrencias.RegistrarAsync(Relato());
 
         Assert.Empty(await cenario.Db.Alertas.ToListAsync());
@@ -133,7 +133,7 @@ public class AlertaServiceTests
         var criado = await cenario.Alertas.CriarAlertaPrevisaoAsync(new CriarAlertaPrevisaoRequest(1, 0.85, 3));
 
         await cenario.Alertas.EncerrarAsync(criado.AlertaId);
-        await cenario.Alertas.EncerrarAsync(criado.AlertaId); // não lança
+        await cenario.Alertas.EncerrarAsync(criado.AlertaId);
 
         Assert.Empty(await cenario.Alertas.ListarAsync(1, somenteAtivos: true));
     }

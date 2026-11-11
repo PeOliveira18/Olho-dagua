@@ -3,16 +3,11 @@ using OlhoDagua.Cidadao.Domain.Entidades;
 
 namespace OlhoDagua.Cidadao.Application.Mapeamento;
 
-/// <summary>Converte entidades do domínio em DTOs da API (a API nunca expõe entidades).</summary>
 public static class Mapeadores
 {
     public static AreaResponse ParaResponse(this AreaRisco a) =>
         new(a.Id, a.Nome, a.Bairro, a.Centro.Latitude, a.Centro.Longitude, a.RaioMetros, a.NivelRiscoHistorico);
 
-    /// <summary>
-    /// Pattern matching por tipo: cada subclasse de Alerta preenche os seus campos próprios.
-    /// A mensagem e a prioridade vêm dos métodos polimórficos de cada subclasse.
-    /// </summary>
     public static AlertaResponse ParaResponse(this Alerta alerta, AreaRisco area)
     {
         var baseResponse = new AlertaResponse(
@@ -32,7 +27,6 @@ public static class Mapeadores
         };
     }
 
-    /// <summary>Visão pública: a coordenada sai aproximada (~110 m) para proteger quem relatou.</summary>
     public static OcorrenciaResponse ParaResponse(this Ocorrencia o)
     {
         var localPublico = o.Local.Aproximada();

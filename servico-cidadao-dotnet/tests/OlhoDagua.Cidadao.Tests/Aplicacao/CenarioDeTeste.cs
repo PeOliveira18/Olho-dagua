@@ -10,10 +10,6 @@ using OlhoDagua.Cidadao.Infrastructure.Repositorios;
 
 namespace OlhoDagua.Cidadao.Tests.Aplicacao;
 
-/// <summary>
-/// Monta os serviços reais sobre um banco EF Core em memória, com relógio
-/// controlável (FakeTimeProvider) e um publicador que só anota o que publicaria.
-/// </summary>
 public sealed class CenarioDeTeste : IDisposable
 {
     public FakeTimeProvider Relogio { get; } = new(new DateTimeOffset(2026, 11, 15, 21, 0, 0, TimeSpan.Zero));
@@ -46,7 +42,6 @@ public sealed class CenarioDeTeste : IDisposable
     public void Dispose() => Db.Dispose();
 }
 
-/// <summary>Dublê de teste: registra os alertas que seriam enviados aos celulares.</summary>
 public sealed class PublicadorEspiao : IPublicadorAlertas
 {
     public List<Alerta> Publicados { get; } = [];

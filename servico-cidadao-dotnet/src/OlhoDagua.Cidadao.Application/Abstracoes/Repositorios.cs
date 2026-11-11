@@ -5,10 +5,6 @@ using OlhoDagua.Cidadao.Domain.Enums;
 
 namespace OlhoDagua.Cidadao.Application.Abstracoes;
 
-/// <summary>
-/// Operações comuns a qualquer repositório. A Application só conhece estas
-/// interfaces; quem implementa (EF Core + PostgreSQL) é a Infrastructure.
-/// </summary>
 public interface IRepositorio<T> where T : Entidade
 {
     Task<T?> ObterPorIdAsync(int id, CancellationToken ct = default);
@@ -23,13 +19,11 @@ public interface IAreaRiscoRepositorio : IRepositorio<AreaRisco>
     Task<int> ContarAlertasAtivosAsync(int areaId, CancellationToken ct = default);
     Task<int> ContarOcorrenciasNaoResolvidasAsync(int areaId, CancellationToken ct = default);
 
-    /// <summary>Áreas ordenadas pela quantidade de relatos desde uma data.</summary>
     Task<IReadOnlyList<RankingAreaResponse>> ObterRankingAsync(DateTimeOffset desde, CancellationToken ct = default);
 }
 
 public interface IAlertaRepositorio : IRepositorio<Alerta>
 {
-    /// <summary>Alertas com a área carregada (necessária para gerar a mensagem).</summary>
     Task<IReadOnlyList<Alerta>> ListarAsync(int? areaId, bool somenteAtivos, CancellationToken ct = default);
     Task<Alerta?> ObterComAreaAsync(int id, CancellationToken ct = default);
     Task<AlertaComunitario?> ObterComunitarioAtivoAsync(int areaId, CancellationToken ct = default);

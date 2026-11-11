@@ -46,7 +46,7 @@ public class AlertaTests
         var alerta = new AlertaSensor(1, "SNS-PANTANAL-01", 235, FaixaNivel.Alerta, Agora);
 
         Assert.Equal(TimeSpan.Zero, alerta.CriadoEm.Offset);
-        Assert.Equal(Agora, alerta.CriadoEm); // mesmo instante, só muda o fuso
+        Assert.Equal(Agora, alerta.CriadoEm);
     }
 
     [Fact]
@@ -54,9 +54,9 @@ public class AlertaTests
     {
         Alerta[] alertas =
         [
-            new AlertaPrevisao(1, 0.9, 3, Agora),                          // Alta + 18
-            new AlertaSensor(1, "SNS-PANTANAL-01", 310, FaixaNivel.Emergencia, Agora), // Crítica + 30
-            new AlertaComunitario(1, 3, Agora)                             // Alta + 15
+            new AlertaPrevisao(1, 0.9, 3, Agora),
+            new AlertaSensor(1, "SNS-PANTANAL-01", 310, FaixaNivel.Emergencia, Agora),
+            new AlertaComunitario(1, 3, Agora)
         ];
 
         var ordenados = alertas.OrderByDescending(a => a.CalcularPrioridade()).Select(a => a.Tipo).ToArray();

@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Microsoft.AspNetCore.Mvc;
 using OlhoDagua.Cidadao.Api.Infra;
 using OlhoDagua.Cidadao.Application.Dtos;
@@ -5,28 +6,29 @@ using OlhoDagua.Cidadao.Application.Servicos;
 
 namespace OlhoDagua.Cidadao.Api.Controllers;
 
-/// <summary>Alertas de alagamento: consultados pelo app, criados pela Telemetria e pelo ML.</summary>
 [ApiController]
 [Route("api/alertas")]
 [Produces("application/json")]
 public sealed class AlertasController(IAlertaService servico) : ControllerBase
 {
-    /// <summary>Lista alertas, do mais prioritário para o menos prioritário.</summary>
-    /// <param name="areaId">Filtra por área de risco.</param>
-    /// <param name="ativos">true (padrão) traz só os alertas em vigor.</param>
     [HttpGet]
+    [EndpointSummary("Lista alertas, do mais prioritário para o menos prioritário.")]
     [ProducesResponseType<IReadOnlyList<AlertaResponse>>(StatusCodes.Status200OK)]
-    public async Task<IActionResult> Listar([FromQuery] int? areaId, [FromQuery] bool ativos = true, CancellationToken ct = default) =>
+    public async Task<IActionResult> Listar(
+        [FromQuery, Description("Filtra por área de risco.")] int? areaId,
+        [FromQuery, Description("true (padrão) traz só os alertas em vigor.")] bool ativos = true,
+        CancellationToken ct = default) =>
         Ok(await servico.ListarAsync(areaId, ativos, ct));
 
     [HttpGet("{id:int}")]
+    [EndpointSummary("Detalhe de um alerta.")]
     [ProducesResponseType<AlertaResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Obter(int id, CancellationToken ct) => Ok(await servico.ObterAsync(id, ct));
 
-    /// <summary>Contrato 2: chamado pelo Serviço de Telemetria quando o nível do córrego sobe de faixa.</summary>
     [HttpPost("sensor")]
     [ExigeApiKey]
+    [EndpointSummary("Contrato 2: chamado pelo Serviço de Telemetria quando o nível do córrego sobe de faixa.")]
     [ProducesResponseType<AlertaCriadoResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
@@ -36,9 +38,9 @@ public sealed class AlertasController(IAlertaService servico) : ControllerBase
         return CreatedAtAction(nameof(Obter), new { id = criado.AlertaId }, criado);
     }
 
-    /// <summary>Chamado pelo modelo de ML com a probabilidade de chuva forte nas próximas horas.</summary>
     [HttpPost("previsao")]
     [ExigeApiKey]
+    [EndpointSummary("Chamado pelo modelo de ML com a probabilidade de chuva forte nas próximas horas.")]
     [ProducesResponseType<AlertaCriadoResponse>(StatusCodes.Status201Created)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
@@ -48,9 +50,9 @@ public sealed class AlertasController(IAlertaService servico) : ControllerBase
         return CreatedAtAction(nameof(Obter), new { id = criado.AlertaId }, criado);
     }
 
-    /// <summary>Contrato 3: encerra o alerta quando o nível volta ao normal. Idempotente.</summary>
     [HttpPatch("{id:int}/encerrar")]
     [ExigeApiKey]
+    [EndpointSummary("Contrato 3: encerra o alerta quando o nível volta ao normal. Idempotente.")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]

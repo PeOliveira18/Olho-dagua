@@ -5,11 +5,6 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace OlhoDagua.Cidadao.Api.Infra;
 
-/// <summary>
-/// Protege os endpoints chamados por outros serviços (Telemetria, ML): a
-/// requisição precisa trazer o header X-Api-Key com a chave configurada em
-/// Integracao:ApiKey. Sem a chave certa, responde 401.
-/// </summary>
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
 public sealed class ExigeApiKeyAttribute : Attribute, IAsyncActionFilter
 {
@@ -36,7 +31,6 @@ public sealed class ExigeApiKeyAttribute : Attribute, IAsyncActionFilter
         await next();
     }
 
-    /// <summary>Comparação que não vaza, pelo tempo de resposta, quantos caracteres acertaram.</summary>
     private static bool IguaisEmTempoConstante(string a, string b) =>
         CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(a), Encoding.UTF8.GetBytes(b));
 }

@@ -2,10 +2,6 @@ using OlhoDagua.Cidadao.Domain.Excecoes;
 
 namespace OlhoDagua.Cidadao.Domain.ValueObjects;
 
-/// <summary>
-/// Value object de posição geográfica. É imutável e se valida na criação,
-/// então nunca existe uma coordenada fora da faixa válida.
-/// </summary>
 public sealed record Coordenada
 {
     private const double RaioTerraMetros = 6_371_000;
@@ -13,7 +9,6 @@ public sealed record Coordenada
     public double Latitude { get; private init; }
     public double Longitude { get; private init; }
 
-    // Usado só pelo EF Core para materializar o owned type.
     private Coordenada() { }
 
     public Coordenada(double latitude, double longitude)
@@ -27,7 +22,6 @@ public sealed record Coordenada
         Longitude = longitude;
     }
 
-    /// <summary>Distância em metros até outra coordenada (fórmula de Haversine).</summary>
     public double DistanciaMetros(Coordenada outra)
     {
         ArgumentNullException.ThrowIfNull(outra);
@@ -41,10 +35,6 @@ public sealed record Coordenada
         return RaioTerraMetros * c;
     }
 
-    /// <summary>
-    /// Versão arredondada (3 casas ≈ 100 m), usada em respostas públicas
-    /// para não expor a localização exata de quem fez um relato.
-    /// </summary>
     public Coordenada Aproximada(int casasDecimais = 3) =>
         new(Math.Round(Latitude, casasDecimais), Math.Round(Longitude, casasDecimais));
 

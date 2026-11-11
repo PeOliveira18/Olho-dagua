@@ -4,10 +4,6 @@ using OlhoDagua.Cidadao.Domain.ValueObjects;
 
 namespace OlhoDagua.Cidadao.Domain.Entidades;
 
-/// <summary>
-/// Região sujeita a alagamento, modelada como um círculo (centro + raio).
-/// Agrupa os alertas, os relatos dos moradores, os abrigos e as inscrições.
-/// </summary>
 public class AreaRisco : Entidade
 {
     private readonly List<Alerta> _alertas = [];
@@ -19,14 +15,13 @@ public class AreaRisco : Entidade
     public Coordenada Centro { get; private set; } = null!;
     public int RaioMetros { get; private set; }
 
-    /// <summary>Histórico de alagamentos da região, de 1 (raro) a 5 (muito frequente).</summary>
     public int NivelRiscoHistorico { get; private set; }
 
     public IReadOnlyCollection<Alerta> Alertas => _alertas.AsReadOnly();
     public IReadOnlyCollection<Ocorrencia> Ocorrencias => _ocorrencias.AsReadOnly();
     public IReadOnlyCollection<Abrigo> Abrigos => _abrigos.AsReadOnly();
 
-    private AreaRisco() { } // EF Core
+    private AreaRisco() { }
 
     public AreaRisco(string nome, string bairro, Coordenada centro, int raioMetros, int nivelRiscoHistorico)
     {
@@ -43,6 +38,5 @@ public class AreaRisco : Entidade
         NivelRiscoHistorico = nivelRiscoHistorico;
     }
 
-    /// <summary>Diz se um ponto está dentro do raio desta área.</summary>
     public bool Contem(Coordenada ponto) => Centro.DistanciaMetros(ponto) <= RaioMetros;
 }

@@ -3,11 +3,6 @@ using OlhoDagua.Cidadao.Domain.Excecoes;
 
 namespace OlhoDagua.Cidadao.Domain.Entidades;
 
-/// <summary>
-/// Um celular inscrito para receber os alertas de uma área.
-/// De propósito, não guarda nome, telefone nem CPF: o dispositivo é
-/// identificado só por um Guid aleatório gerado no app (privacidade / LGPD).
-/// </summary>
 public class Inscricao : Entidade
 {
     public Guid DispositivoId { get; private set; }
@@ -18,7 +13,7 @@ public class Inscricao : Entidade
     public DateTimeOffset CriadaEm { get; private set; }
     public DateTimeOffset? AtualizadaEm { get; private set; }
 
-    private Inscricao() { } // EF Core
+    private Inscricao() { }
 
     public Inscricao(Guid dispositivoId, int areaRiscoId, bool prefereFonteGrande, bool prefereAltoContraste,
                      DateTimeOffset criadaEm)
@@ -32,7 +27,6 @@ public class Inscricao : Entidade
         CriadaEm = EmUtc(criadaEm);
     }
 
-    /// <summary>O morador mudou de área ou de preferências de acessibilidade.</summary>
     public void Atualizar(int areaRiscoId, bool prefereFonteGrande, bool prefereAltoContraste, DateTimeOffset quando)
     {
         DefinirArea(areaRiscoId);

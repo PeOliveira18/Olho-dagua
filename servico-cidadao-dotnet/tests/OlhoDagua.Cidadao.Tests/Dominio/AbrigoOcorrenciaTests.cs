@@ -161,7 +161,7 @@ public class CoordenadaAreaTests
     {
         var area = new AreaRisco("Várzea do Jardim Pantanal", "São Miguel Paulista", new Coordenada(-23.4985, -46.4430), 1200, 5);
 
-        Assert.True(area.Contem(new Coordenada(-23.4990, -46.4425)));  // ~75 m
-        Assert.False(area.Contem(new Coordenada(-23.5870, -46.6100))); // Ipiranga, ~19 km
+        Assert.True(area.Contem(new Coordenada(-23.4990, -46.4425)));
+        Assert.False(area.Contem(new Coordenada(-23.5870, -46.6100)));
     }
 }
