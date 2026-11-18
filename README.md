@@ -43,7 +43,6 @@ Entrega da disciplina **C# Software Development**: o **Serviço do Cidadão**, u
 ```
 Olho-dagua/
 ├── README.md                 ← esta Ficha
-├── PLANO.md                  ← plano mestre do projeto (cópia oficial)
 ├── prompts.md                ← registro do uso de IA
 └── servico-cidadao-dotnet/   ← código da Web API (instruções no README da pasta)
 ```
@@ -55,10 +54,6 @@ Olho-dagua/
 | Serviço do Cidadão (.NET) | C# Software Development | https://github.com/PeOliveira18/Olho-dagua |
 | Serviço de Telemetria (Java) | SOA e Web Services | https://github.com/PeOliveira18/GlobalSolution-SOA |
 | App do morador (Expo) | Mobile Development & IOT | https://github.com/PeOliveira18/GlobalSolution-Mobile |
-
-## Plano do projeto
-
-O planejamento completo (contratos entre serviços, portas, dados de seed, o que cada disciplina entrega e o cronograma até 19/11) está em **[PLANO.md](PLANO.md)**.
 
 ## Links das entregas
 

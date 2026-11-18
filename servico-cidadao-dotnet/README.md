@@ -10,7 +10,7 @@ Web API da CitizenTech **Olho d'Água**, um sistema de alerta comunitário de al
 
 Dois outros sistemas usam esta API: o **app Expo** consulta e envia dados, e o **Serviço de Telemetria** (Java, repositório de SOA) cria e encerra os alertas de sensor.
 
-> A Ficha da CitizenTech está no [README da raiz](../README.md), e o plano completo está no [PLANO.md](../PLANO.md).
+> A Ficha da CitizenTech está no [README da raiz](../README.md).
 
 ## Tecnologias
 
