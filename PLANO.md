@@ -115,7 +115,7 @@ Os repositórios das outras matérias (IoT, ML, OS, Cyber, QA) são criados por 
 - `PLANO.md`, uma cópia deste arquivo
 - `prompts.md`, com o registro de IA daquela matéria
 - `.gitignore` e `.gitattributes`
-- `infra/docker-compose.yml`, só no repositório de SOA, para subir o PostgreSQL do Serviço de Telemetria
+- Nenhum repositório precisa de Docker para o banco: os dois backends usam o **Oracle 19c da FIAP** (veja a B2)
 
 **Fonte da verdade:** a cópia **mestre** do PLANO.md fica no repositório **Olho-dagua**. Se um contrato da Parte B mudar, atualize a cópia mestre e copie o arquivo para os outros repositórios, senão as partes deixam de se encaixar.
 
@@ -128,8 +128,8 @@ Ferramentas já instaladas na máquina: .NET SDK 10, Node 22, Java 23 com Maven 
 | Parte | Stack |
 |---|---|
 | Serviço do Cidadão | **.NET 10**, ASP.NET Core Web API (controllers), EF Core 10 + `Oracle.EntityFrameworkCore` (**Oracle 19c da FIAP**), Scalar (UI do OpenAPI), xUnit |
-| Serviço de Telemetria | **Java 21** (compila no JDK 23), Spring Boot na versão estável que o Spring Initializr oferecer, Maven, Spring Data JPA, **Flyway** (+ `flyway-database-postgresql`), springdoc-openapi **na versão compatível com o Boot escolhido** (Boot 3.x → springdoc 2.x · Boot 4.x → springdoc 3.x), JUnit 5 + MockMvc |
-| Banco | **Serviço do Cidadão:** Oracle 19c da FIAP (`oracle.fiap.com.br:1521/ORCL`), tabelas com prefixo `OD_` e credenciais no *user-secrets*. **Serviço de Telemetria:** PostgreSQL 16 via Docker, banco `telemetria` |
+| Serviço de Telemetria | **Java 21** (compila no JDK 23), Spring Boot na versão estável que o Spring Initializr oferecer, Maven, Spring Data JPA, driver `ojdbc11`, **Flyway** (+ `flyway-database-oracle`), springdoc-openapi **na versão compatível com o Boot escolhido** (Boot 3.x → springdoc 2.x · Boot 4.x → springdoc 3.x), JUnit 5 + MockMvc, H2 em `MODE=Oracle` só nos testes |
+| Banco | **Oracle 19c da FIAP** (`oracle.fiap.com.br:1521/ORCL`), nos dois serviços. O usuário é o RM do aluno, e o schema é **compartilhado com projetos de outras matérias** (tabelas como `EH_*` e `Alertas`): cada serviço usa um prefixo próprio e **nunca cria, altera ou apaga tabelas de outro prefixo**. **Serviço do Cidadão:** prefixo `OD_`, credenciais no *user-secrets*. **Serviço de Telemetria:** prefixo `OT_`, histórico do Flyway em `OT_FLYWAY_HISTORY`, credenciais em variáveis de ambiente ou num `.env` local fora do Git |
 | App | Expo (versão estável mais recente do `create-expo-app`), React Native + **TypeScript**, **Expo Router**, expo-sqlite, expo-location |
 | IoT | ESP32 DevKit no **Wokwi**, Arduino C++, WiFi `Wokwi-GUEST`, HTTPClient + ArduinoJson |
 | ML | Python 3.11+, Jupyter, pandas, scikit-learn, xgboost, matplotlib |
@@ -141,11 +141,11 @@ Ferramentas já instaladas na máquina: .NET SDK 10, Node 22, Java 23 com Maven 
 |---|---|---|---|
 | Serviço do Cidadão (.NET) | **5080** | `http://localhost:5080/api` | `http://localhost:5080/scalar` e `/openapi/v1.json` |
 | Serviço de Telemetria (Java) | **8081** | `http://localhost:8081/api` | `http://localhost:8081/swagger-ui.html` |
-| PostgreSQL | **5432** | user `olho` / senha `olho123` (apenas desenvolvimento, via `.env`) | — |
+| Oracle 19c (FIAP) | **1521** | `oracle.fiap.com.br:1521/ORCL` · usuário = RM do aluno · senha só em variável de ambiente ou *user-secrets*, nunca no repositório | — |
 
 **Variáveis de ambiente:**
-- Cidadão: `ConnectionStrings__Default`, `Integracao__ApiKey`
-- Telemetria: `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD`, `CIDADAO_BASE_URL=http://localhost:5080`, `CIDADAO_API_KEY`
+- Cidadão: `ConnectionStrings__Default` (formato `User Id=RM;Password=...;Data Source=oracle.fiap.com.br:1521/ORCL`, de preferência no *user-secrets*), `Integracao__ApiKey`
+- Telemetria: `SPRING_DATASOURCE_URL=jdbc:oracle:thin:@oracle.fiap.com.br:1521/ORCL`, `SPRING_DATASOURCE_USERNAME` (o RM), `SPRING_DATASOURCE_PASSWORD`, `CIDADAO_BASE_URL=http://localhost:5080`, `CIDADAO_API_KEY`. Elas também podem ficar em `servico-telemetria-java/.env`, que está no `.gitignore` (modelo em `.env.example`)
 - App: `EXPO_PUBLIC_API_CIDADAO`, `EXPO_PUBLIC_API_TELEMETRIA`, `EXPO_PUBLIC_USE_MOCK`
 
 > No celular físico, `localhost` não funciona: use o IP da máquina na rede, por exemplo `http://192.168.0.10:5080/api`.
@@ -153,7 +153,7 @@ Ferramentas já instaladas na máquina: .NET SDK 10, Node 22, Java 23 com Maven 
 **Outras regras:**
 - As **duas APIs habilitam CORS** para qualquer origem em desenvolvimento, para o Expo Web funcionar.
 - A chamada da Telemetria para o Cidadão envia o header **`X-Api-Key`**. O Cidadão rejeita com 401 se a chave estiver errada.
-  - **Valor em desenvolvimento: `olhodagua-dev-chave`.** No Cidadão fica em `Integracao:ApiKey` (`appsettings.Development.json`); na Telemetria, use `CIDADAO_API_KEY=olhodagua-dev-chave`.
+  - **Valor em desenvolvimento:** o mesmo de `Integracao:ApiKey` no `appsettings.Development.json` do Cidadão. Na Telemetria, ele entra só pela variável `CIDADAO_API_KEY`, nunca em arquivo versionado.
 - O Serviço do Cidadão já está implementado (repositório Olho-dagua). Além dos endpoints da C1.4, ele tem `GET /api/alertas/{id}`, `POST /api/abrigos/{id}/saida` e `GET /api/notificacoes?dispositivoId=` (histórico dos pushes simulados, útil para mostrar no vídeo que o alerta chegou ao celular).
 - **Regra do contrato ②:** ao receber um novo alerta de um sensor, o Cidadão **encerra sozinho** o alerta anterior do mesmo sensor. A Telemetria só precisa chamar o contrato ③ (encerrar) quando o nível volta a NORMAL, usando o `alertaId` do último alerta.
 - **JSON:** campos em `camelCase` e **enums como string em MAIÚSCULAS**, por exemplo `"ALERTA"`. No C#, configurar `JsonStringEnumConverter` com essa política de nomes.
@@ -377,7 +377,7 @@ servico-cidadao-dotnet/
 - `SanitizadorPii` mascara CPF e telefone
 
 ### C1.8 README da pasta
-- Pré-requisitos e como subir: `docker compose up -d db`, depois `dotnet ef database update`, depois `dotnet run`.
+- Pré-requisitos e como subir: connection string do Oracle no *user-secrets* (`ConnectionStrings:Default`), depois `dotnet run` (as migrations são aplicadas ao subir).
 - URL do Scalar.
 - Tabela "rubrica → onde está no código".
 - Prints do Scalar e de chamadas funcionando.
@@ -422,7 +422,7 @@ servico-telemetria-java/
     └── web/             ← controllers, @RestControllerAdvice (ProblemDetail)
 src/main/resources/
     ├── application.yml
-    └── db/migration/    ← V1__sensor.sql, V2__leitura.sql, V3__evento_nivel.sql, V4__seed_sensores.sql
+    └── db/migration/    ← V1__sensor.sql, V2__leitura.sql, V3__evento_nivel.sql, V4__seed_sensores.sql, V5__evento_encerramento_notificado.sql
 src/test/java/...        ← JUnit 5
 ```
 
@@ -431,16 +431,16 @@ src/test/java/...        ← JUnit 5
   - Campos: id, codigo (único), tipo (`NIVEL` | `CHUVA`), latitude, longitude, alturaInstalacaoCm, limiteAtencao, limiteAlerta, limiteEmergencia, status (`ATIVO` | `MANUTENCAO` | `INATIVO`), areaRiscoId.
   - O `areaRiscoId` é referência ao outro serviço, **sem FK**.
 - **`Leitura`**: id, sensor (ManyToOne), valor, unidade (`CM` | `MM_H`), faixaCalculada, registradaEm.
-- **`EventoNivel`**: id, sensor (ManyToOne), faixa, valorDisparo, iniciadoEm, encerradoEm, alertaCidadaoId (nullable), notificado (boolean).
+- **`EventoNivel`**: id, sensor (ManyToOne), faixa, valorDisparo, iniciadoEm, encerradoEm, alertaCidadaoId (nullable), notificado (boolean), encerramentoNotificado (boolean, coluna criada pela V5).
 - **`ClassificadorNivel`** (serviço de domínio puro, sem Spring): `Faixa classificar(Sensor s, double valor)`.
 
 **Regra principal**, em `LeituraService.registrar`:
 1. Valida o sensor (precisa existir e estar ATIVO) e salva a leitura com a faixa calculada.
 2. Compara com a faixa do **evento aberto** do sensor, ou NORMAL se não houver evento.
-3. **A faixa subiu** (ex.: NORMAL→ATENCAO ou ATENCAO→ALERTA): fecha o evento anterior, se houver, abre um novo e chama o `CidadaoClient` (contrato ②), guardando o `alertaId`.
+3. **A faixa subiu** (ex.: NORMAL→ATENCAO ou ATENCAO→ALERTA): fecha o evento anterior, se houver, abre um novo e chama o `CidadaoClient` (contrato ②), guardando o `alertaId`. O Cidadão encerra sozinho o alerta anterior do mesmo sensor.
 4. **Voltou para NORMAL:** fecha o evento e chama o encerramento (contrato ③).
 5. **A faixa desceu, mas não para NORMAL:** só atualiza, sem notificar.
-6. **O Cidadão está fora do ar:** grava `notificado=false` e **não falha a leitura**, só registra um log de warning. Um `@Scheduled` a cada 1 minuto reenvia os eventos pendentes. Isso é resiliência entre serviços e vale contar no vídeo.
+6. **O Cidadão está fora do ar:** grava `notificado=false` e **não falha a leitura**, só registra um log de warning. Um `@Scheduled` a cada 1 minuto reenvia os alertas pendentes e, para sensores que já voltaram a NORMAL, os encerramentos pendentes. Isso é resiliência entre serviços e vale contar no vídeo.
 
 ### C2.4 Endpoints
 
@@ -459,14 +459,17 @@ src/test/java/...        ← JUnit 5
 **Documentação:** springdoc com `@Operation` e `@Schema` nos DTOs, e exemplos de requisição no Swagger.
 
 ### C2.5 Banco e migrações
-- PostgreSQL, banco `telemetria`, com `spring.jpa.hibernate.ddl-auto=validate`. **Quem cria as tabelas é o Flyway, nunca o Hibernate.**
-- Índices em `leitura(sensor_id, registrada_em)`.
-- A V4 faz o seed dos 4 sensores da B4.
+- **Oracle 19c da FIAP**, no schema do aluno, com `spring.jpa.hibernate.ddl-auto=validate`. **Quem cria as tabelas é o Flyway, nunca o Hibernate.**
+- Tabelas com prefixo `OT_`: `OT_SENSOR`, `OT_LEITURA` e `OT_EVENTO_NIVEL`. Constraints e índices também começam com `OT_`, porque no Oracle esses nomes não podem se repetir dentro do schema.
+- O schema já tem tabelas de outros projetos, então o Flyway usa `baseline-on-migrate` (versão 0), guarda o histórico em `OT_FLYWAY_HISTORY` e fica com `clean-disabled: true`.
+- Migrações em SQL do Oracle: `VARCHAR2`, `NUMBER`, `TIMESTAMP`, `GENERATED BY DEFAULT AS IDENTITY`.
+- Índice em `OT_LEITURA(SENSOR_ID, REGISTRADA_EM)`.
+- A V4 faz o seed dos 4 sensores da B4. A V5 é a **evolução do esquema**: `ALTER TABLE OT_EVENTO_NIVEL ADD ENCERRAMENTO_NOTIFICADO`.
 
 ### C2.6 Testes
 - **Unitário:** `ClassificadorNivel` em todas as faixas, incluindo os valores exatos de fronteira.
 - **Unitário com Mockito:** `LeituraService` abre evento quando a faixa sobe e não chama o Cidadão quando a faixa se mantém.
-- **Integração:** `@SpringBootTest` + MockMvc para `POST /api/leituras` (201 e 404). Usar Testcontainers com PostgreSQL ou H2 no perfil de teste. Com H2, o Flyway precisa rodar em modo compatível.
+- **Integração:** `@SpringBootTest` + MockMvc para `POST /api/leituras` (201 e 404). Usar H2 em `MODE=Oracle`, configurado por `@TestPropertySource` (que tem prioridade sobre as variáveis de ambiente), para os testes nunca dependerem do Oracle. No H2 o `validate` fica desligado, porque ele descreve `NUMBER` como `NUMERIC`; quem valida o esquema de verdade é o Oracle, ao subir a aplicação.
 
 ### C2.7 Pronto quando
 - [ ] `mvn test` passa
@@ -709,13 +712,12 @@ Um ambiente Linux provisionado **automaticamente por Shell Script** dentro de um
 | Funcionamento completo | 2 |
 
 ### C6.2 O que hospedar
-Os dois serviços e o PostgreSQL, via **Docker Compose**. A "aplicação web" que aparece no navegador é a **página Scalar do Serviço do Cidadão** (`http://olhodagua.local:5080/scalar`) e o Swagger da Telemetria.
+Os dois serviços, via **Docker Compose**. O banco é o Oracle da FIAP, fora da VM: os containers só precisam de acesso à internet e das credenciais em variáveis de ambiente. A "aplicação web" que aparece no navegador é a **página Scalar do Serviço do Cidadão** (`http://olhodagua.local:5080/scalar`) e o Swagger da Telemetria.
 
 ### C6.3 Arquivos
 ```
 infra/
-├── docker-compose.yml          ← db (postgres:16 + init.sql cria os bancos cidadao e telemetria), cidadao, telemetria
-├── init.sql
+├── docker-compose.yml          ← cidadao e telemetria (o banco é o Oracle da FIAP, fora da VM)
 ├── .env.example
 ├── Dockerfile.cidadao          ← (ou dentro de cada serviço) multi-stage .NET 10
 ├── Dockerfile.telemetria       ← multi-stage Maven → JRE 21
@@ -968,21 +970,19 @@ Entrega                                                                         
 ## Etapa 0 — Base comum (hoje, ~30 min)
 
 1. ✔ Os 3 repositórios (Olho-dagua, GlobalSolution-SOA e GlobalSolution-Mobile) foram criados e receberam o commit inicial.
-2. Abrir o Docker Desktop e subir o Postgres da Telemetria **a partir do repositório de SOA**: `docker compose -f infra/docker-compose.yml up -d`. O Serviço do Cidadão usa o Oracle da FIAP e não precisa do Docker.
-   - Os dois compose são o **mesmo projeto Docker** (`name: olhodagua`), então rodar em qualquer um dos dois sobe o mesmo container `olhodagua-db`. Ele cria os bancos `cidadao` e `telemetria` de uma vez.
-   - **Não suba dois Postgres:** ambos usariam a porta 5432.
-3. Conferir que os dois bancos existem: `docker exec -it olhodagua-db psql -U olho -l` deve listar `cidadao` e `telemetria`.
+2. Conferir o acesso ao **Oracle da FIAP** (`oracle.fiap.com.br:1521/ORCL`) com o RM e a senha, por exemplo no SQL Developer. Não é preciso Docker para o banco.
+3. Guardar as credenciais fora dos repositórios: no Cidadão, com `dotnet user-secrets`; na Telemetria, nas variáveis `SPRING_DATASOURCE_*` ou num `.env` local, que está no `.gitignore`.
 4. Instalar a ferramenta de migrations do EF: `dotnet tool install --global dotnet-ef`.
 
-✅ **Checkpoint:** o Postgres está no ar com os 2 bancos.
+✅ **Checkpoint:** o login no Oracle da FIAP funciona e as credenciais estão fora do Git.
 
 ## Trilha C# — `servico-cidadao-dotnet/` (seção C1)
 
 | Etapa | O que fazer | Checkpoint |
 |---|---|---|
-| **CS1 · Esqueleto** | Criar a solução (`dotnet new sln`, que no .NET 10 gera `.slnx`), os 4 projetos em `src/` (`classlib` × 3 + `webapi --use-controllers`), o projeto `xunit` em `tests/`, e as referências **Api → Application → Domain** e **Infrastructure → Application/Domain**. Pacotes: `Npgsql.EntityFrameworkCore.PostgreSQL` e `Microsoft.EntityFrameworkCore.Design` (Infrastructure/Api), `Scalar.AspNetCore` (Api). | `dotnet build` passa e `/scalar` abre vazio na porta 5080 |
+| **CS1 · Esqueleto** | Criar a solução (`dotnet new sln`, que no .NET 10 gera `.slnx`), os 4 projetos em `src/` (`classlib` × 3 + `webapi --use-controllers`), o projeto `xunit` em `tests/`, e as referências **Api → Application → Domain** e **Infrastructure → Application/Domain**. Pacotes: `Oracle.EntityFrameworkCore` e `Microsoft.EntityFrameworkCore.Design` (Infrastructure/Api), `Scalar.AspNetCore` (Api). | `dotnet build` passa e `/scalar` abre vazio na porta 5080 |
 | **CS2 · Domínio + testes** | `Coordenada`, enums, `AreaRisco`, `Alerta` (abstrata) + `AlertaSensor` / `AlertaComunitario` / `AlertaPrevisao`, `Ocorrencia`, `Abrigo`, `Inscricao`, exceções de domínio. Os testes de domínio da C1.7 entram **junto**. | `dotnet test` passa com ≥ 5 testes de domínio, **sem banco** |
-| **CS3 · EF Core** | `CidadaoDbContext`, configurações `IEntityTypeConfiguration`, TPH do `Alerta`, `Coordenada` como owned type, enums como string, seed da B4. Migration `Inicial`. | `dotnet ef database update` cria as tabelas no banco `cidadao` e o seed aparece |
+| **CS3 · EF Core** | `CidadaoDbContext`, configurações `IEntityTypeConfiguration`, TPH do `Alerta`, `Coordenada` como owned type, enums como string, seed da B4. Migration `Inicial`. | `dotnet ef database update` cria as tabelas `OD_` no Oracle e o seed aparece |
 | **CS4 · Serviços + API** | `IRepositorio<T>`, serviços, `INotificador` (2 implementações), `IRegraAlertaComunitario` com `TimeProvider`, `ISanitizadorPii`, controllers da C1.4, `X-Api-Key`, ProblemDetails, CORS, `JsonStringEnumConverter` em MAIÚSCULAS. Tudo async com `CancellationToken`. Testes da regra comunitária e do sanitizador. | Todos os endpoints respondem no Scalar · 3 POSTs de ocorrência na área 1 criam 1 alerta comunitário |
 | **CS5 · Acabamento** | README da pasta (como rodar, tabela rubrica → código, `classDiagram` Mermaid), arquivo `.http` com exemplos de chamadas, prints do Scalar. | Um colega clona o repositório e roda seguindo só o README |
 
@@ -990,10 +990,10 @@ Entrega                                                                         
 
 | Etapa | O que fazer | Checkpoint |
 |---|---|---|
-| **J1 · Esqueleto** | Gerar o projeto no Spring Initializr (Maven, Java 21, groupId `br.com.olhodagua`, artifactId `telemetria`) com: Web, Data JPA, PostgreSQL Driver, Flyway, Validation e Actuator. Adicionar `flyway-database-postgresql` e o springdoc compatível. Criar os pacotes `domain` / `application` / `infrastructure` / `web`. `application.yml` com a porta 8081 e `ddl-auto: validate`. | `mvn spring-boot:run` sobe e o `/swagger-ui.html` abre |
-| **J2 · Migrações** | Migrações V1 a V4 (sensor, leitura, evento_nivel, seed dos 4 sensores da B4) e as entidades JPA batendo com elas. | Ao subir, o Flyway cria e popula o banco `telemetria`, e o `validate` passa |
+| **J1 · Esqueleto** | Gerar o projeto no Spring Initializr (Maven, Java 21, groupId `br.com.olhodagua`, artifactId `telemetria`) com: Web, Data JPA, Oracle Driver, Flyway, Validation e Actuator. Adicionar `flyway-database-oracle` e o springdoc compatível. Criar os pacotes `domain` / `application` / `infrastructure` / `web`. `application.yml` com a porta 8081, `ddl-auto: validate`, histórico do Flyway em `OT_FLYWAY_HISTORY` e credenciais só por variável de ambiente. | `mvn spring-boot:run` sobe e o `/swagger-ui.html` abre |
+| **J2 · Migrações** | Migrações V1 a V4 em SQL do Oracle (`OT_SENSOR`, `OT_LEITURA`, `OT_EVENTO_NIVEL` e seed dos 4 sensores da B4) e as entidades JPA batendo com elas. | Ao subir, o Flyway cria e popula as tabelas `OT_` no Oracle, e o `validate` passa |
 | **J3 · Domínio + endpoints** | `ClassificadorNivel` (puro, com testes de fronteira), `LeituraService` com a regra da C2.3, controllers da C2.4, DTOs como `record`, Bean Validation, `@RestControllerAdvice` com `ProblemDetail`, exemplos com `@Schema`. | O Swagger cria sensor, registra leitura e mostra o status · `mvn test` passa |
-| **J4 · Integração com o C#** | `CidadaoClient` (RestClient com `X-Api-Key`) para os contratos ② e ③, guardando o `alertaId`; `@Scheduled` que reenvia eventos com `notificado=false`; testes com Mockito. | Com o C# no ar, a sequência 100 → 160 → 230 → 310 → 90 gera 3 alertas e depois o encerramento · com o C# desligado, a leitura não falha e o alerta é reenviado quando ele volta |
+| **J4 · Integração com o C#** | `CidadaoClient` (RestClient com `X-Api-Key`) para os contratos ② e ③, guardando o `alertaId`; `@Scheduled` que reenvia alertas e encerramentos pendentes; migração V5 (evolução do esquema); testes com Mockito. | Com o C# no ar, a sequência 100 → 160 → 230 → 310 → 90 gera 3 alertas e depois o encerramento · com o C# desligado, a leitura não falha e o alerta é reenviado quando ele volta |
 | **J5 · Acabamento** | README com o **nome dos integrantes**, instruções, tabela rubrica → código e prints do Swagger. Teste de integração com MockMvc. | `mvn test` passa · README completo |
 
 ## Trilha Mobile — `app-mobile/` (seção C3)
