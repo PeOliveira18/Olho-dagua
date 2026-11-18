@@ -54,17 +54,6 @@ Olho-dagua/
 | Serviço de Telemetria (Java) | SOA e Web Services | https://github.com/PeOliveira18/GlobalSolution-SOA |
 | App do morador (Expo) | Mobile Development & IOT | https://github.com/PeOliveira18/GlobalSolution-Mobile |
 
-## Links das entregas
-
-| Disciplina | Link |
-|---|---|
-| Vídeo do app (Mobile) | *a definir* |
-| Projeto Wokwi (IoT) | *a definir* |
-| Vídeo IoT | *a definir* |
-| Vídeo ML | *a definir* |
-| Vídeo Linux (OS) | *a definir* |
-| Pitch (Testing) | *a definir* |
-
 ## Integrantes
 
 | Nome | RM |
