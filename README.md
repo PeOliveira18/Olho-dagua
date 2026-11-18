@@ -43,7 +43,6 @@ Entrega da disciplina **C# Software Development**: o **Serviço do Cidadão**, u
 ```
 Olho-dagua/
 ├── README.md                 ← esta Ficha
-├── prompts.md                ← registro do uso de IA
 └── servico-cidadao-dotnet/   ← código da Web API (instruções no README da pasta)
 ```
 
